@@ -61,7 +61,7 @@ Medical records stored securely on the Ethereum blockchain.
 ## 📸 User Interface Preview
 
 ### 🏠 Landing Page  
-![Landing](./screenshots/landing.png)
+![Landing](./screenshots/landing_page.png)
 
 ### 📊 Dashboard  
 ![Dashboard](./screenshots/dashboard.png)
@@ -88,3 +88,42 @@ Follow these steps to install, compile, and run LifeLedger locally.
 ### **1️⃣ Install Dependencies**
 ```bash
 npm install
+```
+
+### **2️⃣ Configure Environment Variables**
+Create a .env file in the project root and add:
+```bash
+PRIVATE_KEY=your_wallet_private_key
+RPC_URL=https://eth-sepolia.g.alchemy.com/v2/your_rpc_url
+```
+### **3️⃣ Compile Smart Contracts**
+```bash
+npx hardhat compile
+```
+### **4️⃣ Deploy Smart Contracts (Sepolia or Localhost)**
+```bash
+npx hardhat run scripts/deploy.js --network sepolia
+```
+For local Blockchain(e.g.,Hardhat Node):
+```bash
+npx hardhat run scripts/deploy.js --network localhost
+```
+### **5️⃣ Start the Frontend**
+```bash
+npm run dev
+```
+
+Your app will be available at:
+
+👉 http://localhost:5173/
+ (Vite)
+or
+👉 http://localhost:3000/
+ (React/Node)
+
+
+
+
+
+
+
