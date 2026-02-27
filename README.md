@@ -1,106 +1,90 @@
-🌐 LifeLedger – Decentralized Organ Donation & Transplant Management System
+# 🌐 LifeLedger  
+### *Decentralized Organ Donation & Transplant Management System*
 
-LifeLedger is a next-generation decentralized application (DApp) designed to enhance transparency, trust, and efficiency in organ donation and transplant management.
-Built using Ethereum Blockchain, Hardhat, Solidity, and Web3.js, the platform ensures secure donor–patient registration, immutable medical records, and guaranteed data authenticity.
+LifeLedger is a blockchain-powered platform built using **Ethereum**, **Solidity**, **Hardhat**, and **Web3.js**.  
+It provides a secure, transparent, and tamper-proof system for **Donor & Patient Registration**,  
+**Organ/Blood Matching**, and **Real-time Blockchain Interaction**.
 
-LifeLedger aims to eliminate data manipulation, reduce medical mismatches, and enable real-time donor–patient compatibility checks through smart contracts.
+---
 
-🚀 Key Features
-🧬 1. Donor & Patient Registration
+## 🚀 Key Features
 
-Secure registration using blockchain-backed storage ensures all critical records remain immutable and verifiable.
+### 1️⃣ Donor & Patient Registration  
+Secure, immutable registration of medical data directly on the blockchain.
 
-🔐 2. Automatic Medical ID Generation
+### 2️⃣ Automatic Medical ID Generation  
+Unique blockchain-backed Medical IDs for both donors and patients.
 
-System-generated unique Medical IDs for both donors and patients to simplify record tracking and verification.
+### 3️⃣ Smart Contract-Based Matching  
+Automated compatibility checks based on:
+- Organ Type  
+- Blood Group  
+- Availability  
 
-🫀 3. Smart Contract–Based Organ & Blood Group Matching
+### 4️⃣ Real-time Blockchain Interaction  
+Seamless Web3 connectivity enabling:
+- Wallet connection  
+- On-chain data read/write  
+- Contract execution  
 
-Real-time compatibility checks based on:
+### 5️⃣ Email Notification System  
+Optional email alerts whenever a donor–patient match is detected.
 
-Organ type
+### 6️⃣ Tamper-Proof Storage  
+Medical records stored securely on the Ethereum blockchain.
 
-Blood group
+---
 
-Availability status
+## 🛠 Tech Stack
 
-Matching logic is executed directly through smart contracts for complete transparency.
+### **Blockchain & Smart Contracts**
+- Solidity  
+- Hardhat  
+- Ethereum (Sepolia Testnet)
 
-⚡ 4. Real-time Blockchain Interaction
+### **Frontend**
+- HTML  
+- CSS  
+- JavaScript (Vanilla / Bootstrap)
 
-Seamless Web3 integration enables instant:
+### **Blockchain Integration**
+- Web3.js  
+- Ethers.js
 
-Wallet connection
+### **Backend (Optional)**
+- Node.js  
+- Express.js  
+- Nodemailer (Email notifications)
 
-Data read/write
+---
 
-Contract interaction
+## 📸 User Interface Preview
 
-✉️ 5. Email Notification System
+### 🏠 Landing Page  
+![Landing](./screenshots/landing.png)
 
-Optional automated alerts delivered when a donor–patient match is found.
+### 📊 Dashboard  
+![Dashboard](./screenshots/dashboard.png)
 
-🔗 6. Tamper-Proof Storage
+### 🧑‍⚕️ Donor Registration  
+![Register Donor](./screenshots/register_donor.png)
 
-All critical medical data is stored securely on Ethereum, preventing unauthorized modification.
+### 🧑‍⚕️ Patient Registration  
+![Register Patient](./screenshots/register_patient.png)
 
-🛠 Tech Stack
-Blockchain & Smart Contracts
+### 🔍 Transplant Matching  
+![Matching](./screenshots/transplant_match.png)
 
-Solidity
+### 🔐 Confirmation mail
+![Matching](./screenshots/match_confirmation.png)
 
-Hardhat
 
-Ethereum Sepolia Testnet
+---
 
-Frontend
+## ⚙️ Setup & Installation
 
-HTML
+Follow these steps to install, compile, and run LifeLedger locally.
 
-CSS
-
-JavaScript
-
-Blockchain Integration
-
-Web3.js
-
-Ethers.js
-
-Backend (Optional)
-
-Node.js
-
-Express.js
-
-Nodemailer (for notifications)
-
-📸 User Interface Previews
-🏠 Landing Page
-
-📊 Dashboard
-
-🧑‍⚕️ Donor Registration
-
-🧑‍⚕️ Patient Registration
-
-🔍 Transplant Matching
-
-⚙️ Setup & Installation
-
-Follow these steps to install, compile, and run LifeLedger on your local machine.
-
-1️⃣ Install project dependencies
+### **1️⃣ Install Dependencies**
+```bash
 npm install
-2️⃣ Configure environment settings
-
-Create a .env file and add your credentials:
-
-PRIVATE_KEY=your_private_key
-RPC_URL=https://eth-sepolia.g.alchemy.com/v2/your_rpc_url
-3️⃣ Compile smart contracts
-npx hardhat compile
-4️⃣ Deploy contracts (Sepolia or Localhost)
-npx hardhat run scripts/deploy.js --network sepolia
-5️⃣ Start the frontend development server
-npm run dev
