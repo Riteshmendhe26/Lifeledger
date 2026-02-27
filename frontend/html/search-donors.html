@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,700;1,900&display=swap" rel="stylesheet">
+
+    <link href="../css/styles.css" rel="stylesheet">
+    <link href="../css/bootstrap.css" rel="stylesheet">
+    <link href="../css/fontawesome-all.css" rel="stylesheet">
+
+    <link rel="icon" href="images/organ-donation-logo-new.svg">
+
+    <title>Search Donors</title> 
+    <script src="main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+
+    <style>
+        .search-container {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .filter-group {
+            background: rgba(255,255,255,0.9);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-title {
+            color: #1565c0;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .donor-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 1px solid #dee2e6;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .donor-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .donor-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+        }
+
+        .donor-name {
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .donor-id {
+            background: #007bff;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .donor-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #495057;
+            min-width: 80px;
+        }
+
+        .detail-value {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .organ-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .organ-tag {
+            background: #28a745;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .blood-type {
+            background: #dc3545;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .search-button {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+        }
+
+        .clear-button {
+            background: #6c757d;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-summary {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .contact-donor {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #17a2b8;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 8px 15px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav>
+                        <a href="index.html">
+                            <img class="nav-logo" src="./images/transparentlogo.png" alt="Organ Donation Platform">
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="row center-box">
+                <div class="col-md-12">
+                    <h2 style="text-align: center; margin-bottom: 30px; color: #1a1a1a; font-weight: bold;">
+                        🔍 Advanced Donor Search
+                    </h2>
+
+                    <!-- Search Filters -->
+                    <div class="search-container">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="filter-group">
+                                    <div class="filter-title">🫀 Required Organ</div>
+                                    <select id="organFilter" class="form-control">
+                                        <option value="">All Organs</option>
+                                        <option value="Heart">Heart</option>
+                                        <option value="Liver">Liver</option>
+                                        <option value="Left Kidney">Left Kidney</option>
+                                        <option value="Right Kidney">Right Kidney</option>
+                                        <option value="Left Lung">Left Lung</option>
+                                        <option value="Right Lung">Right Lung</option>
+                                        <option value="Pancreas">Pancreas</option>
+                                        <option value="Intestine">Intestine</option>
+                                    </select>
+                                </div>
+
+                                <div class="filter-group">
+                                    <div class="filter-title">🩸 Blood Type</div>
+                                    <select id="bloodFilter" class="form-control">
+                                        <option value="">All Blood Types</option>
+                                        <option value="O-">O-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="A+">A+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="AB+">AB+</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="filter-group">
+                                    <div class="filter-title">👤 Age Range</div>
+                                    <div style="display: flex; gap: 10px;">
+                                        <input type="number" id="minAge" placeholder="Min Age" class="form-control" min="18" max="80">
+                                        <input type="number" id="maxAge" placeholder="Max Age" class="form-control" min="18" max="80">
+                                    </div>
+                                </div>
+
+                                <div class="filter-group">
+                                    <div class="filter-title">⚖️ Weight Range (kg)</div>
+                                    <div style="display: flex; gap: 10px;">
+                                        <input type="number" id="minWeight" placeholder="Min Weight" class="form-control" min="40" max="150">
+                                        <input type="number" id="maxWeight" placeholder="Max Weight" class="form-control" min="40" max="150">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="filter-group">
+                                    <div class="filter-title">🔍 Search by Name or Medical ID</div>
+                                    <input type="text" id="searchText" placeholder="Enter donor name or medical ID..." class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <button id="searchBtn" class="search-button">🔍 Search Donors</button>
+                                <button id="clearBtn" class="clear-button">🗑️ Clear All</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loading Spinner -->
+                    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+                        <div>
+                            <div class="spinner"></div>
+                            <p style="margin-top: 15px; color: #6c757d;">Searching donors...</p>
+                        </div>
+                    </div>
+
+                    <!-- Results -->
+                    <div id="searchResults" style="display: none;">
+                        <div id="resultsSummary" class="results-summary"></div>
+                        <div id="donorContainer">
+                            <!-- Donor cards will be generated here -->
+                        </div>
+                    </div>
+
+                    <!-- No Results -->
+                    <div id="noResults" class="no-results" style="display: none;">
+                        <h3>😔 No Donors Found</h3>
+                        <p>No donors match your search criteria. Try adjusting your filters.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Contract configuration
+        const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93f642f64180aa3";
+        
+        const CONTRACT_ABI = [
+            {
+                "inputs": [{"internalType": "string", "name": "_medicalid", "type": "string"}],
+                "name": "getDonor",
+                "outputs": [
+                    {
+                        "components": [
+                            {"internalType": "string", "name": "fullname", "type": "string"},
+                            {"internalType": "uint256", "name": "age", "type": "uint256"},
+                            {"internalType": "string", "name": "gender", "type": "string"},
+                            {"internalType": "string", "name": "medicalid", "type": "string"},
+                            {"internalType": "string", "name": "bloodtype", "type": "string"},
+                            {"internalType": "string[]", "name": "organs", "type": "string[]"},
+                            {"internalType": "uint256", "name": "weight", "type": "uint256"},
+                            {"internalType": "uint256", "name": "height", "type": "uint256"},
+                            {"internalType": "string", "name": "email", "type": "string"},
+                            {"internalType": "string", "name": "phone", "type": "string"},
+                            {"internalType": "bool", "name": "isActive", "type": "bool"},
+                            {"internalType": "uint256", "name": "registrationTime", "type": "uint256"}
+                        ],
+                        "internalType": "struct DonorContract.Donor",
+                        "name": "",
+                        "type": "tuple"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getAllDonors",
+                "outputs": [{"internalType": "string[]", "name": "", "type": "string[]"}],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        let allDonors = [];
+
+        // Show loading
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'flex';
+            document.getElementById('searchResults').style.display = 'none';
+            document.getElementById('noResults').style.display = 'none';
+        }
+
+        // Hide loading
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+
+        // Load all donors from blockchain
+        async function loadAllDonors() {
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    throw new Error('MetaMask not found. Please install MetaMask.');
+                }
+
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+
+                if (accounts.length === 0) {
+                    throw new Error('No accounts connected. Please connect MetaMask.');
+                }
+
+                const web3 = new Web3(window.ethereum);
+                const contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+
+                // Get all donor IDs
+                const donorIDs = await contract.methods.getAllDonors().call();
+                console.log('📋 Found donor IDs:', donorIDs);
+
+                if (donorIDs.length === 0) {
+                    throw new Error('No donors registered yet');
+                }
+
+                // Fetch all donor details
+                allDonors = [];
+                for (let id of donorIDs) {
+                    try {
+                        const donorData = await contract.methods.getDonor(id).call();
+                        allDonors.push({
+                            fullname: donorData.fullname || donorData[0],
+                            age: parseInt(donorData.age || donorData[1]),
+                            gender: donorData.gender || donorData[2],
+                            medicalid: donorData.medicalid || donorData[3],
+                            bloodtype: donorData.bloodtype || donorData[4],
+                            organs: donorData.organs || donorData[5],
+                            weight: parseInt(donorData.weight || donorData[6]),
+                            height: parseInt(donorData.height || donorData[7]),
+                            email: donorData.email || donorData[8],
+                            phone: donorData.phone || donorData[9]
+                        });
+                    } catch (error) {
+                        console.warn(`⚠️ Failed to fetch donor ${id}:`, error.message);
+                    }
+                }
+
+                console.log('✅ Loaded all donors:', allDonors);
+                return true;
+
+            } catch (error) {
+                console.error('❌ Failed to load donors:', error.message);
+                alert(`❌ Error loading donors: ${error.message}`);
+                return false;
+            }
+        }
+
+        // Filter donors based on search criteria
+        function filterDonors() {
+            const organFilter = document.getElementById('organFilter').value;
+            const bloodFilter = document.getElementById('bloodFilter').value;
+            const minAge = parseInt(document.getElementById('minAge').value) || 0;
+            const maxAge = parseInt(document.getElementById('maxAge').value) || 999;
+            const minWeight = parseInt(document.getElementById('minWeight').value) || 0;
+            const maxWeight = parseInt(document.getElementById('maxWeight').value) || 999;
+            const searchText = document.getElementById('searchText').value.toLowerCase().trim();
+
+            return allDonors.filter(donor => {
+                // Organ filter
+                if (organFilter && !donor.organs.some(organ => 
+                    organ.toLowerCase().includes(organFilter.toLowerCase()))) {
+                    return false;
+                }
+
+                // Blood type filter
+                if (bloodFilter && donor.bloodtype !== bloodFilter) {
+                    return false;
+                }
+
+                // Age range filter
+                if (donor.age < minAge || donor.age > maxAge) {
+                    return false;
+                }
+
+                // Weight range filter
+                if (donor.weight < minWeight || donor.weight > maxWeight) {
+                    return false;
+                }
+
+                // Text search filter
+                if (searchText && 
+                    !donor.fullname.toLowerCase().includes(searchText) &&
+                    !donor.medicalid.toLowerCase().includes(searchText)) {
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
+        // Create donor card HTML
+        function createDonorCard(donor) {
+            const organTags = Array.isArray(donor.organs) 
+                ? donor.organs.map(organ => `<span class="organ-tag">${organ}</span>`).join('')
+                : `<span class="organ-tag">${donor.organs}</span>`;
+
+            return `
+                <div class="donor-card">
+                    <button class="contact-donor" onclick="contactDonor('${donor.medicalid}', '${donor.fullname}')">
+                        📞 Contact
+                    </button>
+                    
+                    <div class="donor-header">
+                        <h5 class="donor-name">${donor.fullname}</h5>
+                        <div>
+                            <span class="donor-id">${donor.medicalid}</span>
+                            <span class="blood-type" style="margin-left: 10px;">${donor.bloodtype}</span>
+                        </div>
+                    </div>
+
+                    <div class="donor-details">
+                        <div class="detail-item">
+                            <span class="detail-label">👤 Age:</span>
+                            <span class="detail-value">${donor.age} years</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">⚧ Gender:</span>
+                            <span class="detail-value">${donor.gender}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">⚖️ Weight:</span>
+                            <span class="detail-value">${donor.weight} kg</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">📏 Height:</span>
+                            <span class="detail-value">${donor.height} cm</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">📧 Email:</span>
+                            <span class="detail-value">${donor.email}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">📱 Phone:</span>
+                            <span class="detail-value">${donor.phone}</span>
+                        </div>
+                    </div>
+
+                    <div class="organ-tags">
+                        <strong style="color: #495057;">Available Organs:</strong>
+                        ${organTags}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Display search results
+        function displayResults(donors) {
+            hideLoading();
+
+            if (donors.length === 0) {
+                document.getElementById('noResults').style.display = 'block';
+                document.getElementById('searchResults').style.display = 'none';
+                return;
+            }
+
+            // Show results summary
+            const summary = `Found ${donors.length} donor${donors.length === 1 ? '' : 's'} matching your criteria`;
+            document.getElementById('resultsSummary').textContent = summary;
+
+            // Generate donor cards
+            const container = document.getElementById('donorContainer');
+            container.innerHTML = donors.map(donor => createDonorCard(donor)).join('');
+
+            document.getElementById('searchResults').style.display = 'block';
+            document.getElementById('noResults').style.display = 'none';
+        }
+
+        // Contact donor function
+        function contactDonor(medicalId, donorName) {
+            const message = `Contact Donor: ${donorName}\nMedical ID: ${medicalId}\n\nWould you like to:\n1. Send a message\n2. Request organ information\n3. Schedule a meeting`;
+            alert(message);
+            console.log(`📞 Contacting donor: ${donorName} (${medicalId})`);
+        }
+
+        // Search donors
+        async function searchDonors() {
+            showLoading();
+            console.log('🔍 Starting donor search...');
+
+            // Load donors if not already loaded
+            if (allDonors.length === 0) {
+                const loaded = await loadAllDonors();
+                if (!loaded) {
+                    hideLoading();
+                    return;
+                }
+            }
+
+            // Apply filters
+            const filteredDonors = filterDonors();
+            console.log('✅ Filtered results:', filteredDonors);
+
+            // Display results
+            displayResults(filteredDonors);
+        }
+
+        // Clear all filters
+        function clearFilters() {
+            document.getElementById('organFilter').value = '';
+            document.getElementById('bloodFilter').value = '';
+            document.getElementById('minAge').value = '';
+            document.getElementById('maxAge').value = '';
+            document.getElementById('minWeight').value = '';
+            document.getElementById('maxWeight').value = '';
+            document.getElementById('searchText').value = '';
+            
+            document.getElementById('searchResults').style.display = 'none';
+            document.getElementById('noResults').style.display = 'none';
+            
+            console.log('🗑️ All filters cleared');
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('searchBtn').addEventListener('click', searchDonors);
+            document.getElementById('clearBtn').addEventListener('click', clearFilters);
+            
+            // Auto-search on enter key
+            document.getElementById('searchText').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchDonors();
+                }
+            });
+            
+            console.log('🚀 Advanced Donor Search System loaded!');
+        });
+    </script>
+    <script>
+// Initialize Web3 and App when page loads
+window.addEventListener('DOMContentLoaded', async function() {
+    console.log('🚀 Initializing LifeLedger...');
+    
+    if (typeof window.ethereum !== 'undefined') {
+        try {
+            // Initialize Web3
+            App.web3 = new Web3(window.ethereum);
+            console.log('✅ Web3 initialized');
+            
+            // Request account access
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            console.log('✅ MetaMask connected');
+            
+            // Start the app
+            const started = await App.start();
+            if (started) {
+                console.log('✅ LifeLedger started successfully');
+            }
+        } catch (error) {
+            console.error('❌ Failed to initialize:', error);
+        }
+    } else {
+        console.warn('⚠️ MetaMask not found');
+        alert('Please install MetaMask to use LifeLedger');
+    }
+});
+</script>
+</body>
+</html>

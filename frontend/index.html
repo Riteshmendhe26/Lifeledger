@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,700;1,900&display=swap" rel="stylesheet">
+
+        <link href="css/styles.css" rel="stylesheet">
+        <link href="css/bootstrap.css" rel="stylesheet">
+        <link href="css/fontawesome-all.css" rel="stylesheet">
+
+        <link rel="icon" href="images/organ-donation-logo-new.svg">
+        <!-- <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script> -->
+        <script src="js/web3-integration.js"></script>
+
+        <script src="main.js"></script>
+        <title>Dashboard - Organ Donation Platform</title>
+    </head>
+
+    <body>
+        <!-- start of navigation-->      
+        <header>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <nav>
+                            <a href="index.html"><img class="nav-logo" src="./images/transparentlogo.png" alt="Organ Donation Platform"></a>
+                            <ul>
+                                <li>
+                                    <button class="btn btn-sm btn-primary homepage">
+                                        <a class="hover" href="homepage.html">Homepage</a>
+                                    </button>
+                                </li>
+                                <!-- 🔥 ONLY THIS IS ADDED - Connect Wallet Button -->
+                                <li>
+                                    <button id="connectWallet" class="btn btn-sm btn-success">
+                                        <i class="fas fa-wallet"></i> Connect Wallet
+                                    </button>
+                                </li>
+                                <!-- 🔥 END OF ADDITION -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- end of navigation-->
+
+        <!-- Main -->
+            <main>    
+                <div class="container">
+                    <div class="row center-box">              
+                        <div class="col-sm-3">
+                            <div class="left-content width">
+                                <a href="donor-registration.html">
+                                    <button class="btn btn-lg btn-primary custom">Register Donor</button>
+                                </a>                                
+                        <br>                            
+                                <a href="view-donors.html">
+                                    <button class="btn btn-lg btn-primary custom">View Donors</button>
+                                </a>                                
+                        <br>
+                               <!-- <a href="verify-pledges.html">
+                                    <button class="btn btn-lg btn-primary custom">Verify Pledges</button>
+                                </a> -->
+                            </div>
+                        </div>     
+                        
+                        <div class="col-sm-3">
+                            <div class="right-content width">                                
+                                    <a href="patient-registration.html">
+                                        <button class="btn btn-lg btn-primary custom">Register Patient</button>
+                                    </a>                                
+                            <br>                            
+                                    <a href="view-patients.html">
+                                        <button class="btn btn-lg btn-primary custom">View Patients</button>
+                                    </a>                                
+                            <br>
+                                    <!-- <a href="view-pledges.html">
+                                        <button class="btn btn-lg btn-primary custom">View Pledges</button>
+                                    </a> -->
+                            </div>
+                        </div>                    
+                    </div> <!-- end of button -->  <br>    
+
+                    <div class="container">
+                        <div class="row center-box">
+                            <div class="col-md-4">
+                                <div class="transplant-btn" id="size">
+                                        <a href="transplant-matching.html"">
+                                            <button class="btn btn-lg btn-primary custom custom-tm">Transplant Match</button>
+                                        </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div><br>
+                    
+               <div class="container">
+    <div class="row center-box">
+        <div class="col-md-4 container-1">                            
+            <div class="search">
+                <h2>Search Donor</h2>
+                <p><input type="text-home" id="inputDonorMedicalID" placeholder="Donor Medical ID"></p>
+                <div class="details">
+                    <p id="getDonorFullName"></p>
+                    <p id="getDonorAge"></p>
+                    <p id="getDonorGender"></p>
+                    <p id="getDonorBloodType"></p>
+                    <p id="getDonorOrgan"></p>
+                    <p id="getDonorWeight"></p>
+                    <p id="getDonorHeight"></p>
+                    <p id="searchDonorCheck"></p>
+                </div>
+                <!-- ✅ FIXED: Changed onclick to App.searchDonor() -->
+               <button type="button" class="btn btn-primary search" onclick="searchDonorDirect()">Search</button>
+            </div>
+        </div>
+        
+        <div class="col-md-4 container-2">
+            <div class="search">
+                <h2>Search Patient</h2>
+                <p><input type="text" id="inputPatientMedicalID" placeholder="Patient Medical ID"></p>
+                <div class="details">
+                    <p id="getPatientFullName"></p>
+                    <p id="getPatientAge"></p>
+                    <p id="getPatientGender"></p>
+                    <p id="getPatientBloodType"></p>
+                    <p id="getPatientOrgan"></p>
+                    <p id="getPatientWeight"></p>
+                    <p id="getPatientHeight"></p>
+                    <p id="searchPatientCheck"></p>
+                </div>
+                <!-- ✅ FIXED: Changed onclick to App.searchPatient() -->
+                <button type="button" class="btn btn-primary search" onclick="searchPatientDirect()">Search</button>
+            </div>
+        </div> 
+    </div> <!-- end of col -->
+</div> <!-- end of row-->
+
+            </main>
+
+                <footer>
+
+                </footer>
+
+        <!-- 🔥 ONLY THIS SCRIPT IS ADDED - Connect Wallet Functionality -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('connectWallet').addEventListener('click', async () => {
+                    if (typeof window.ethereum !== 'undefined') {
+                        try {
+                            const accounts = await window.ethereum.request({ 
+                                method: 'eth_requestAccounts' 
+                            });
+                            const account = accounts[0];
+                            
+                            document.getElementById('connectWallet').innerHTML = 
+                                '<i class="fas fa-check"></i> ' + account.substring(0,6) + '...' + account.substring(38);
+                            document.getElementById('connectWallet').classList.remove('btn-success');
+                            document.getElementById('connectWallet').classList.add('btn-outline-success');
+                            
+                            console.log('✅ Wallet Connected:', account);
+                            alert('🎉 Wallet Connected Successfully!\n' + account);
+                        } catch (error) {
+                            console.error('❌ Connection failed:', error);
+                            alert('❌ Failed to connect wallet!');
+                        }
+                    } else {
+                        alert('🦊 Please install MetaMask to connect wallet!');
+                        window.open('https://metamask.io/', '_blank');
+                    }
+                });
+            });
+        </script>
+        <!-- 🔥 END OF SCRIPT ADDITION -->
+         <!-- Add this before </body> in your index.html -->
+<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+
+<script>
+// Quick initialization script
+window.addEventListener('DOMContentLoaded', async function() {
+    console.log('🚀 Page loaded - checking setup...');
+    
+    // Test if main.js loaded
+    if (typeof App !== 'undefined') {
+        console.log('✅ App object found');
+    } else {
+        console.error('❌ App object not found - main.js not loaded?');
+        return;
+    }
+    
+    // Test if Web3 is available
+    if (typeof Web3 !== 'undefined') {
+        console.log('✅ Web3 library loaded');
+    } else {
+        console.error('❌ Web3 library not loaded');
+        return;
+    }
+    
+    // Initialize Web3 if MetaMask is available
+    if (typeof window.ethereum !== 'undefined') {
+        try {
+            App.web3 = new Web3(window.ethereum);
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            await App.start();
+            console.log('✅ Web3 initialized and connected');
+        } catch (error) {
+            console.error('❌ Web3 initialization failed:', error);
+        }
+    } else {
+        console.warn('⚠️ MetaMask not found');
+    }
+});
+
+// Manual search function for testing
+async function testSearch() {
+    console.log('🔍 Manual search test...');
+    const donorId = document.getElementById('inputDonorMedicalID')?.value;
+    console.log('📋 Searching for:', donorId);
+    
+    if (typeof App.searchDonor === 'function') {
+        console.log('✅ App.searchDonor function exists');
+        try {
+            await App.searchDonor();
+        } catch (error) {
+            console.error('❌ Search failed:', error);
+        }
+    } else {
+        console.error('❌ App.searchDonor function not found');
+    }
+}
+</script>
+
+<script>
+// 🎯 FINAL WORKING VERSION - Using Your ACTUAL Contract Structure!
+async function searchDonorDirect() {
+    try {
+        console.log('🔍 Direct donor search using ACTUAL contract...');
+        
+        const donorMedicalId = document.getElementById('inputDonorMedicalID')?.value.trim();
+        
+        if (!donorMedicalId) {
+            alert('Please enter a donor medical ID');
+            return;
+        }
+
+        // Check Web3 and MetaMask
+        if (typeof window.ethereum === 'undefined') {
+            alert('Please install MetaMask to use this feature');
+            return;
+        }
+
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const web3 = new Web3(window.ethereum);
+        
+        // ⭐ CORRECT ABI FOR YOUR ACTUAL CONTRACT
+        const contractAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
+        const contractABI = [
+            {
+                "inputs": [],
+                "name": "getAllDonors",
+                "outputs": [{"internalType": "string[]", "name": "", "type": "string[]"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "string", "name": "_medicalid", "type": "string"}],
+                "name": "getDonor",
+                "outputs": [
+                    {
+                        "components": [
+                            {"internalType": "string", "name": "fullname", "type": "string"},
+                            {"internalType": "uint256", "name": "age", "type": "uint256"},
+                            {"internalType": "string", "name": "gender", "type": "string"},
+                            {"internalType": "string", "name": "medicalid", "type": "string"},
+                            {"internalType": "string", "name": "bloodtype", "type": "string"},
+                            {"internalType": "string[]", "name": "organs", "type": "string[]"},
+                            {"internalType": "uint256", "name": "weight", "type": "uint256"},
+                            {"internalType": "uint256", "name": "height", "type": "uint256"},
+                            {"internalType": "string", "name": "email", "type": "string"},
+                            {"internalType": "string", "name": "phone", "type": "string"},
+                            {"internalType": "bool", "name": "isActive", "type": "bool"},
+                            {"internalType": "uint256", "name": "registrationTime", "type": "uint256"}
+                        ],
+                        "internalType": "struct DonorContract.Donor",
+                        "name": "",
+                        "type": "tuple"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "string", "name": "_medicalid", "type": "string"}],
+                "name": "validateDonor",
+                "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+        // First get all donor IDs
+        console.log('📋 Getting all donor IDs...');
+        const allDonorIDs = await contract.methods.getAllDonors().call();
+        console.log('📋 All donor IDs:', allDonorIDs);
+        
+        // Check if the requested donor ID exists in the list
+        if (!allDonorIDs.includes(donorMedicalId)) {
+            alert('❌ Donor not found. Please check the Medical ID.\n\nAvailable donors: ' + allDonorIDs.join(', '));
+            return;
+        }
+        
+        console.log('✅ Donor ID found in the list!');
+
+        // Get donor data - THIS RETURNS THE COMPLETE STRUCT
+        console.log('📋 Fetching donor data...');
+        const donorStruct = await contract.methods.getDonor(donorMedicalId).call();
+        console.log('📋 Raw donor struct:', donorStruct);
+
+        // Extract donor information from the struct
+        const donor = {
+            fullname: donorStruct.fullname || 'Unknown',
+            age: parseInt(donorStruct.age) || 0,
+            gender: donorStruct.gender || 'Unknown',
+            medicalid: donorStruct.medicalid || donorMedicalId,
+            bloodtype: donorStruct.bloodtype || 'Unknown', 
+            organs: donorStruct.organs || ['Unknown'],
+            weight: parseInt(donorStruct.weight) || 0,
+            height: parseInt(donorStruct.height) || 0,
+            email: donorStruct.email || 'Not provided',
+            phone: donorStruct.phone || 'Not provided',
+            isActive: donorStruct.isActive || false
+        };
+
+        console.log('✅ Processed donor:', donor);
+        displayDonorInline(donor);
+        
+        // Success message with all details
+        alert(`✅ Donor found successfully!
+
+Name: ${donor.fullname}
+Age: ${donor.age}
+Blood Type: ${donor.bloodtype}
+Organ(s): ${Array.isArray(donor.organs) ? donor.organs.join(', ') : donor.organs}
+Email: ${donor.email}
+Phone: ${donor.phone}
+Status: ${donor.isActive ? 'Active' : 'Inactive'}`);
+
+    } catch (error) {
+        console.error('❌ Search failed:', error);
+        alert('❌ Search failed: ' + error.message);
+    }
+}
+
+// 🎯 CLEAN & SIMPLE Design (Like Screenshot-110) with Functionality
+function displayDonorInline(donor) {
+    const organsText = Array.isArray(donor.organs) ? donor.organs.join(', ') : (donor.organs || 'Unknown');
+    
+    const donorDetailsHTML = `
+        <div style="
+            background: linear-gradient(135deg, #2c7a7b 0%, #285e61 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-family: 'Montserrat', sans-serif;
+            box-shadow: 0 4px 15px rgba(44, 122, 123, 0.3);
+        ">
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Full Name:</strong> ${donor.fullname}
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Age:</strong> ${donor.age}
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Gender:</strong> ${donor.gender}
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Blood Type:</strong> ${donor.bloodtype}
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Organ(s):</strong> ${organsText}
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Weight:</strong> ${donor.weight} kg
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Height:</strong> ${donor.height} cm
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Email:</strong> ${donor.email}
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Phone:</strong> ${donor.phone}
+            </div>
+            <div style="margin-bottom: 18px; font-size: 16px; font-weight: 600;">
+                <strong>Status:</strong> ${donor.isActive ? '✅ Active' : '❌ Inactive'}
+            </div>
+            
+            <!-- Action Buttons - Simple & Clean -->
+            <div style="
+                display: flex;
+                justify-content: center;
+                gap: 12px;
+                padding-top: 15px;
+                border-top: 1px solid rgba(255, 255, 255, 0.2);
+            ">
+                <button onclick="window.print()" style="
+                    background: rgba(255, 255, 255, 0.15);
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    font-family: 'Montserrat', sans-serif;
+                    transition: all 0.2s ease;
+                " onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+                    🖨️ Print Details
+                </button>
+                <button onclick="copyDonorDetails('${donor.fullname}', '${donor.medicalid}', '${donor.bloodtype}', '${organsText}', '${donor.email}', '${donor.phone}')" style="
+                    background: rgba(255, 255, 255, 0.15);
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    font-family: 'Montserrat', sans-serif;
+                    transition: all 0.2s ease;
+                " onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+                    📋 Copy Info
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Clear existing results and add new ones
+    const existingResults = document.querySelector('.donor-inline-results');
+    if (existingResults) {
+        existingResults.remove();
+    }
+    
+    const searchContainer = document.querySelector('.col-md-4.container-1 .search');
+    if (searchContainer) {
+        const resultsDiv = document.createElement('div');
+        resultsDiv.className = 'donor-inline-results';
+        resultsDiv.innerHTML = donorDetailsHTML;
+        searchContainer.appendChild(resultsDiv);
+        console.log('✅ Clean donor details displayed with functionality');
+    } else {
+        console.warn('❌ Search container not found');
+    }
+}
+
+// Enhanced copy function with more details
+function copyDonorDetails(name, medicalId, bloodType, organs, email, phone) {
+    const text = `✅ Donor Details - LifeLedger Platform
+
+📋 Basic Information:
+• Name: ${name}
+• Medical ID: ${medicalId}
+• Blood Type: ${bloodType}
+• Organ(s): ${organs}
+
+📞 Contact Information:
+• Email: ${email}
+• Phone: ${phone}
+
+Generated from LifeLedger Blockchain Platform
+Date: ${new Date().toLocaleDateString()}`;
+    
+    navigator.clipboard.writeText(text).then(() => {
+        // Show success message
+        const successMsg = document.createElement('div');
+        successMsg.innerHTML = '✅ Donor details copied to clipboard!';
+        successMsg.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #48bb78;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 10000;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+        `;
+        document.body.appendChild(successMsg);
+        
+        setTimeout(() => {
+            document.body.removeChild(successMsg);
+        }, 3000);
+    }).catch(() => {
+        alert('❌ Could not copy to clipboard');
+    });
+}
+</script>
+
+<script>
+// 🏥 PATIENT SEARCH - Same functionality as donor search
+async function searchPatientDirect() {
+    try {
+        console.log('🔍 Direct patient search using ACTUAL contract...');
+        
+        const patientMedicalId = document.getElementById('inputPatientMedicalID')?.value.trim();
+        
+        if (!patientMedicalId) {
+            alert('Please enter a patient medical ID');
+            return;
+        }
+
+        // Check Web3 and MetaMask
+        if (typeof window.ethereum === 'undefined') {
+            alert('Please install MetaMask to use this feature');
+            return;
+        }
+
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const web3 = new Web3(window.ethereum);
+        
+        // ⭐ CORRECT ABI FOR PATIENT FUNCTIONS
+        const contractAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
+        const contractABI = [
+            {
+                "inputs": [],
+                "name": "getAllPatients",
+                "outputs": [{"internalType": "string[]", "name": "", "type": "string[]"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "string", "name": "_medicalid", "type": "string"}],
+                "name": "getPatient",
+                "outputs": [
+                    {
+                        "components": [
+                            {"internalType": "string", "name": "fullname", "type": "string"},
+                            {"internalType": "uint256", "name": "age", "type": "uint256"},
+                            {"internalType": "string", "name": "gender", "type": "string"},
+                            {"internalType": "string", "name": "medicalid", "type": "string"},
+                            {"internalType": "string", "name": "bloodtype", "type": "string"},
+                            {"internalType": "string", "name": "requiredOrgan", "type": "string"},
+                            {"internalType": "uint256", "name": "weight", "type": "uint256"},
+                            {"internalType": "uint256", "name": "height", "type": "uint256"},
+                            {"internalType": "string", "name": "email", "type": "string"},
+                            {"internalType": "string", "name": "phone", "type": "string"},
+                            {"internalType": "bool", "name": "isActive", "type": "bool"},
+                            {"internalType": "uint256", "name": "urgencyLevel", "type": "uint256"},
+                            {"internalType": "uint256", "name": "registrationTime", "type": "uint256"}
+                        ],
+                        "internalType": "struct DonorContract.Patient",
+                        "name": "",
+                        "type": "tuple"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "string", "name": "_medicalid", "type": "string"}],
+                "name": "validatePatient",
+                "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+        // First get all patient IDs
+        console.log('📋 Getting all patient IDs...');
+        const allPatientIDs = await contract.methods.getAllPatients().call();
+        console.log('📋 All patient IDs:', allPatientIDs);
+        
+        // Check if the requested patient ID exists in the list
+        if (!allPatientIDs.includes(patientMedicalId)) {
+            alert('❌ Patient not found. Please check the Medical ID.\n\nAvailable patients: ' + allPatientIDs.join(', '));
+            return;
+        }
+        
+        console.log('✅ Patient ID found in the list!');
+
+        // Get patient data - THIS RETURNS THE COMPLETE STRUCT
+        console.log('📋 Fetching patient data...');
+        const patientStruct = await contract.methods.getPatient(patientMedicalId).call();
+        console.log('📋 Raw patient struct:', patientStruct);
+
+        // Extract patient information from the struct
+        const patient = {
+            fullname: patientStruct.fullname || 'Unknown',
+            age: parseInt(patientStruct.age) || 0,
+            gender: patientStruct.gender || 'Unknown',
+            medicalid: patientStruct.medicalid || patientMedicalId,
+            bloodtype: patientStruct.bloodtype || 'Unknown', 
+            requiredOrgan: patientStruct.requiredOrgan || 'Unknown',
+            weight: parseInt(patientStruct.weight) || 0,
+            height: parseInt(patientStruct.height) || 0,
+            email: patientStruct.email || 'Not provided',
+            phone: patientStruct.phone || 'Not provided',
+            isActive: patientStruct.isActive || false,
+            urgencyLevel: parseInt(patientStruct.urgencyLevel) || 0
+        };
+
+        console.log('✅ Processed patient:', patient);
+        displayPatientInline(patient);
+        
+        // Success message with all details
+        alert(`✅ Patient found successfully!
+
+Name: ${patient.fullname}
+Age: ${patient.age}
+Blood Type: ${patient.bloodtype}
+Required Organ: ${patient.requiredOrgan}
+Urgency Level: ${patient.urgencyLevel}/5
+Email: ${patient.email}
+Phone: ${patient.phone}
+Status: ${patient.isActive ? 'Active' : 'Inactive'}`);
+
+    } catch (error) {
+        console.error('❌ Patient search failed:', error);
+        alert('❌ Patient search failed: ' + error.message);
+    }
+}
+
+// 🏥 PATIENT DISPLAY - Clean design matching donor search
+function displayPatientInline(patient) {
+    // Get urgency level color and text
+    const getUrgencyColor = (level) => {
+        switch(level) {
+            case 5: return '#e53e3e'; // Critical - Red
+            case 4: return '#f56500'; // High - Orange
+            case 3: return '#d69e2e'; // Medium - Yellow
+            case 2: return '#38a169'; // Low - Green
+            case 1: return '#3182ce'; // Very Low - Blue
+            default: return '#718096'; // Unknown - Gray
+        }
+    };
+    
+    const getUrgencyText = (level) => {
+        switch(level) {
+            case 5: return 'Critical';
+            case 4: return 'High';
+            case 3: return 'Medium';
+            case 2: return 'Low';
+            case 1: return 'Very Low';
+            default: return 'Unknown';
+        }
+    };
+    
+    const patientDetailsHTML = `
+        <div style="
+            background: linear-gradient(135deg, #2c7a7b 0%, #285e61 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-family: 'Montserrat', sans-serif;
+            box-shadow: 0 4px 15px rgba(44, 122, 123, 0.3);
+        ">
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Full Name:</strong> ${patient.fullname}
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Age:</strong> ${patient.age}
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Gender:</strong> ${patient.gender}
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Blood Type:</strong> ${patient.bloodtype}
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Required Organ:</strong> ${patient.requiredOrgan}
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Weight:</strong> ${patient.weight} kg
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Height:</strong> ${patient.height} cm
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Email:</strong> ${patient.email}
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Phone:</strong> ${patient.phone}
+            </div>
+            <div style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">
+                <strong>Urgency Level:</strong> 
+                <span style="
+                    background: ${getUrgencyColor(patient.urgencyLevel)};
+                    padding: 4px 8px;
+                    border-radius: 12px;
+                    font-size: 14px;
+                    margin-left: 8px;
+                ">${patient.urgencyLevel}/5 - ${getUrgencyText(patient.urgencyLevel)}</span>
+            </div>
+            <div style="margin-bottom: 18px; font-size: 16px; font-weight: 600;">
+                <strong>Status:</strong> ${patient.isActive ? '✅ Active' : '❌ Inactive'}
+            </div>
+            
+            <!-- Action Buttons - Same as donor -->
+            <div style="
+                display: flex;
+                justify-content: center;
+                gap: 12px;
+                padding-top: 15px;
+                border-top: 1px solid rgba(255, 255, 255, 0.2);
+            ">
+                <button onclick="window.print()" style="
+                    background: rgba(255, 255, 255, 0.15);
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    font-family: 'Montserrat', sans-serif;
+                    transition: all 0.2s ease;
+                " onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+                    🖨️ Print Details
+                </button>
+                <button onclick="copyPatientDetails('${patient.fullname}', '${patient.medicalid}', '${patient.bloodtype}', '${patient.requiredOrgan}', '${patient.email}', '${patient.phone}', ${patient.urgencyLevel})" style="
+                    background: rgba(255, 255, 255, 0.15);
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    font-family: 'Montserrat', sans-serif;
+                    transition: all 0.2s ease;
+                " onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+                    📋 Copy Info
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Clear existing results and add new ones
+    const existingResults = document.querySelector('.patient-inline-results');
+    if (existingResults) {
+        existingResults.remove();
+    }
+    
+    const searchContainer = document.querySelector('.col-md-4.container-2 .search');
+    if (searchContainer) {
+        const resultsDiv = document.createElement('div');
+        resultsDiv.className = 'patient-inline-results';
+        resultsDiv.innerHTML = patientDetailsHTML;
+        searchContainer.appendChild(resultsDiv);
+        console.log('✅ Clean patient details displayed with functionality');
+    } else {
+        console.warn('❌ Patient search container not found');
+    }
+}
+
+// Patient copy function with formatted details
+function copyPatientDetails(name, medicalId, bloodType, requiredOrgan, email, phone, urgencyLevel) {
+    const urgencyText = ['Unknown', 'Very Low', 'Low', 'Medium', 'High', 'Critical'][urgencyLevel] || 'Unknown';
+    
+    const text = `🏥 Patient Details - LifeLedger Platform
+
+📋 Basic Information:
+• Name: ${name}
+• Medical ID: ${medicalId}
+• Blood Type: ${bloodType}
+• Required Organ: ${requiredOrgan}
+• Urgency Level: ${urgencyLevel}/5 - ${urgencyText}
+
+📞 Contact Information:
+• Email: ${email}
+• Phone: ${phone}
+
+Generated from LifeLedger Blockchain Platform
+Date: ${new Date().toLocaleDateString()}`;
+    
+    navigator.clipboard.writeText(text).then(() => {
+        // Show success message
+        const successMsg = document.createElement('div');
+        successMsg.innerHTML = '✅ Patient details copied to clipboard!';
+        successMsg.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #48bb78;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 10000;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+        `;
+        document.body.appendChild(successMsg);
+        
+        setTimeout(() => {
+            document.body.removeChild(successMsg);
+        }, 3000);
+    }).catch(() => {
+        alert('❌ Could not copy to clipboard');
+    });
+}
+</script>
+
+
+
+    </body>
+</html>

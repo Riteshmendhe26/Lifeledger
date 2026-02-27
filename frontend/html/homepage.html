@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="">
+    <meta name="description" content="Organ Donation Platform using Blockchain">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/style-home.css">
+    <link rel="stylesheet" href="../css/fontawesome-all.css">
+    <!-- <link rel="stylesheet" href="../main.js"> -->
+    <link rel="icon" href="images/organ-donation-logo-new.svg">
+    
+    <!-- 🔥 ONLY THIS ADDED - Web3 Integration -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const connectButton = document.getElementById('connectWallet');
+        
+        if (connectButton) {
+            connectButton.addEventListener('click', async () => {
+                if (typeof window.ethereum !== 'undefined') {
+                    try {
+                        const accounts = await window.ethereum.request({ 
+                            method: 'eth_requestAccounts' 
+                        });
+                        
+                        const account = accounts[0];
+                        
+                        // Update button
+                        connectButton.innerHTML = '<i class="fas fa-check"></i> ' + account.substring(0,6) + '...' + account.substring(38);
+                        connectButton.classList.remove('btn-success');
+                        connectButton.classList.add('btn-outline-success');
+                        
+                        console.log('✅ Wallet Connected:', account);
+                        alert('🎉 Wallet Connected!\n' + account);
+                        
+                    } catch (error) {
+                        console.error('❌ Connection failed:', error);
+                        alert('❌ Failed to connect wallet!');
+                    }
+                } else {
+                    alert('🦊 Please install MetaMask!');
+                }
+            });
+        }
+    });
+</script>
+
+    <!-- 🔥 END ADDITION -->
+
+    <title>Organ Donation Platform</title>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="row">
+                <nav>
+                    <a href="homepage.html"><img id="logo" src="./images/transparentlogo.png" alt="LifeLedger Logo"></a>
+                    <ul>
+                        <li><a class="active" href="">Home</a></li>
+                        <li><a href="about-us.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="awareness.html">Awareness</a></li>
+                        <!-- <li><a href="donor-pledge.html">Pledge</a></li> -->
+
+                        <!-- 🔥 ONLY THIS IS ADDED - Connect Wallet Button -->
+                        <li>
+                            <button id="connectWallet" class="btn btn-sm btn-success" style="margin-left: 10px;">
+                                <i class="fas fa-wallet"></i> Connect Wallet
+                            </button>
+                        </li>
+                        <!-- 🔥 END OF ADDITION -->
+                         
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="row center-box">
+                <div class="col-md-7 banner">
+                    <h1>Make the Lifesaving Decision<br>Become a Donor</h1>
+                    <h3>Over 100,000 patients are awaiting a transplant. You can be the reason they get a second chance at life.</h3>
+                    <button class="btn btn-lg btn-success">
+                        <a class="hover" href="index.html">Become a Donor</a>
+                    </button>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="slider"><img src="../images/health-insurance.png" alt="Organ Donation"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-bg">
+            <div class="container">
+                <h1 id="heading">Why It Matters</h1>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="content-box">
+                            <img src="../images/time.png" alt="Waiting List">
+                            <p>Every 9 minutes, a new person is added to the national transplant waiting list.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="content-box">
+                            <img src="../images/people (1).png" alt="Transplant Icon">
+                            <p>17 individuals lose their lives each day due to the shortage of available organs.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="content-box">
+                            <img src="../images/public-health.png" alt="Donation Icon">
+                            <p>One organ donor can save up to 8 lives and improve the lives of 75 others through eye and tissue donation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-bg-1">
+            <div class="container">
+                <h1 id="heading">FAQs</h1>
+                <div class="row center-box">
+                    <div class="col-12">
+                        <div class="accordian">
+                            <div>
+                                <input type="checkbox" name="example_accordian" id="section1" class="accordian_input">
+                                <label for="section1" class="accordian_label">Who can become a donor?</label>
+                                <div class="accordian_content">
+                                    <p>Anyone, regardless of age or medical history, can register as a potential donor. Your eligibility will be determined at the time of death based on medical criteria.</p>
+                                    <p>Organ matching is based on factors such as blood type, size, urgency, and location. Personal characteristics like gender, race, income, or social status are never considered.</p>
+                                </div>
+                            </div>
+                            <div>
+                                <input type="checkbox" name="example_accordian" id="section2" class="accordian_input">
+                                <label for="section2" class="accordian_label">How does the deceased donation process work?</label>
+                                <div class="accordian_content">
+                                    <p>Deceased donation occurs only after death is declared based on strict medical criteria. Registries are checked for prior consent, or consent is obtained from next of kin.</p>
+                                    <p>Transplant professionals follow national policies to determine organ suitability and recipient matching based on urgency and compatibility.</p>
+                                </div>
+                            </div>
+                            <div>
+                                <input type="checkbox" name="example_accordian" id="section3" class="accordian_input">
+                                <label for="section3" class="accordian_label">Are there any costs to the donor's family?</label>
+                                <div class="accordian_content">
+                                    <p>No. Donor families are never charged for the cost of organ, eye, or tissue donation. Medical and funeral expenses before death remain the family's responsibility.</p>
+                                </div>
+                            </div>
+                            <div>
+                                <input type="checkbox" name="example_accordian" id="section4" class="accordian_input">
+                                <label for="section4" class="accordian_label">Does being a donor affect medical care?</label>
+                                <div class="accordian_content">
+                                    <p>Absolutely not. Life-saving efforts are always the top priority. Donation is considered only after all resuscitation efforts fail and death is legally declared.</p>
+                                </div>
+                            </div>
+                            <div>
+                                <input type="checkbox" name="example_accordian" id="section5" class="accordian_input">
+                                <label for="section5" class="accordian_label">Where can I learn about living donation?</label>
+                                <div class="accordian_content">
+                                    <p>Living donation allows healthy individuals to donate organs like kidneys or parts of the liver. It reduces wait times and improves transplant outcomes.</p>
+                                    <p>Living tissue donations, such as birth tissue, help treat wounds and support healing. Visit our awareness page for trusted resources.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="row center-box">
+                <div class="col-4">
+                    <div class="footer-logo"><img src="../images/transparentlogo.png" alt="LifeLedger Logo"></div>
+                </div>    
+                <div class="col-12">
+                    <div id="copyright">
+                        <p>© 2025 LifeLedger – All Rights Reserved</p>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </footer>
+    
+    <!-- 🔥 ONLY THIS SCRIPT IS ADDED - Connect Wallet Functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if wallet was already connected
+            checkWalletConnection();
+            
+            document.getElementById('connectWallet').addEventListener('click', async () => {
+                if (typeof window.ethereum !== 'undefined') {
+                    try {
+                        const accounts = await window.ethereum.request({ 
+                            method: 'eth_requestAccounts' 
+                        });
+                        const account = accounts[0];
+                        
+                        // Update button to show connected address
+                        updateWalletButton(account);
+                        
+                        // Store connection in localStorage
+                        localStorage.setItem('walletConnected', account);
+                        
+                        console.log('✅ Wallet Connected:', account);
+                        alert('🎉 Wallet Connected Successfully!\n' + account);
+                    } catch (error) {
+                        console.error('❌ Connection failed:', error);
+                        alert('❌ Failed to connect wallet!');
+                    }
+                } else {
+                    alert('🦊 Please install MetaMask to connect wallet!');
+                    window.open('https://metamask.io/', '_blank');
+                }
+            });
+        });
+
+        // Function to update wallet button display
+        function updateWalletButton(account) {
+            const walletButton = document.getElementById('connectWallet');
+            walletButton.innerHTML = '<i class="fas fa-check"></i> ' + account.substring(0,6) + '...' + account.substring(38);
+            walletButton.classList.remove('btn-success');
+            walletButton.classList.add('btn-outline-success');
+        }
+
+        // Function to check if wallet is already connected
+        async function checkWalletConnection() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ 
+                        method: 'eth_accounts' 
+                    });
+                    if (accounts.length > 0) {
+                        updateWalletButton(accounts[0]);
+                    }
+                } catch (error) {
+                    console.log('Wallet not connected');
+                }
+            }
+        }
+    </script>
+    <!-- 🔥 END OF SCRIPT ADDITION -->
+    
+</body>
+</html>

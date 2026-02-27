@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,700;1,900&display=swap" rel="stylesheet">
+
+    <link href="../css/styles.css" rel="stylesheet">
+    <link href="../css/bootstrap.css" rel="stylesheet">
+    <link href="../css/fontawesome-all.css" rel="stylesheet">
+    <link rel="icon" href="images/organ-donation-logo-new.svg">
+
+    <title>Patient Registration</title>
+    
+    <!-- Load Web3 first -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
+
+<body>
+<header>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav>
+                    <a href="index.html">
+                        <img class="nav-logo" src="./images/transparentlogo.png" alt="Organ Donation Platform">
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <div class="container">
+        <div class="row center-box">
+            <h3>Register a Patient</h3>
+            <div class="col-md-4 form-bg">
+
+                <p>Full Name: <input type="text" id="PatientFullName" placeholder="Full name"></p>
+                <p>Age: <input type="text" id="PatientAge" placeholder="Age"></p>
+
+                <form>
+                    <label><p>Gender:</p></label>
+                    <div id="group">
+                        <label><input type="radio" name="gender" value="Male"><span>Male</span></label>
+                        <label><input type="radio" name="gender" value="Female"><span>Female</span></label>
+                        <label><input type="radio" name="gender" value="Others"><span>Others</span></label>
+                    </div>
+                </form>
+
+                <p>Medical ID: <input type="text" id="PatientMedicalID" placeholder="Patient Medical ID" readonly></p>
+
+                <form>
+                    <label><p>Blood Type:</p></label>
+                    <select name="bloodtype" id="PatientBloodType">
+                        <option value="A-">A-</option>
+                        <option value="A+">A+</option>
+                        <option value="B-">B-</option>
+                        <option value="B+">B+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="O-">O-</option>
+                        <option value="O+">O+</option>
+                    </select>
+                </form><br>
+
+                <form>
+                    <label><p>Required Organ:</p></label>
+                    <select name="requiredorgan" id="PatientRequiredOrgan">
+                        <option value="Heart">Heart</option>
+                        <option value="Liver">Liver</option>
+                        <option value="Left Kidney">Left Kidney</option>
+                        <option value="Right Kidney">Right Kidney</option>
+                        <option value="Left Lung">Left Lung</option>
+                        <option value="Right Lung">Right Lung</option>
+                        <option value="Pancreas">Pancreas</option>
+                        <option value="Intestine">Intestine</option>
+                    </select>
+                </form><br>
+
+                <p>Weight (kg): <input type="text" id="PatientWeight" placeholder="Weight"></p>
+                <p>Height (cm): <input type="text" id="PatientHeight" placeholder="Height"></p>
+
+                <form>
+                    <label><p>Urgency Level (1-5):</p></label>
+                    <select name="urgency" id="PatientUrgency">
+                        <option value="1">1 - Low</option>
+                        <option value="2">2 - Moderate</option>
+                        <option value="3">3 - High</option>
+                        <option value="4">4 - Critical</option>
+                        <option value="5">5 - Emergency</option>
+                    </select>
+                </form><br>
+
+                <div id="register">
+                    <button type="button" class="btn btn-primary register" id="registerBtn">Register</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row center-box">
+            <div class="col-md-5">
+                <div class="alert warning" style="display: none;">
+                    <span id="PatientInputCheck"></span>
+                    <span class="closebtn" onclick="closeAlert();">&times;</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+// Enhanced Patient Registration System
+console.log('🚀 Loading Enhanced Patient Registration System...');
+
+// Medical ID Generator Functions
+function generateMedicalID(userType, name) {
+    const prefix = userType === "Patient" ? "PAT" : "DON";
+    const initials = name.trim().substring(0, 3).toUpperCase();
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    return `${prefix}-${initials}-${randomNum}`;
+}
+
+function showAlert(message, color) {
+    const alertDiv = document.querySelector('.alert.warning');
+    const alertText = document.getElementById('PatientInputCheck');
+    
+    if (alertDiv && alertText) {
+        alertDiv.style.backgroundColor = color;
+        alertDiv.style.display = 'block';
+        alertText.textContent = message;
+    } else {
+        alert(message);
+    }
+}
+
+function closeAlert() {
+    const alertDiv = document.querySelector('.alert.warning');
+    if (alertDiv) {
+        alertDiv.style.display = 'none';
+    }
+}
+
+// Enhanced Patient Registration Function
+async function registerPatient() {
+    try {
+        console.log('🔍 Starting patient registration with correct parameters...');
+        
+        if (typeof window.ethereum === 'undefined') {
+            showAlert('🦊 Please install MetaMask!', '#f44336');
+            return;
+        }
+
+        const accounts = await window.ethereum.request({ 
+            method: 'eth_requestAccounts' 
+        });
+        
+        if (accounts.length === 0) {
+            showAlert('🔒 Please connect your MetaMask wallet', '#ff9800');
+            return;
+        }
+        
+        console.log('✅ MetaMask connected:', accounts[0]);
+        showAlert('🔗 Connected to MetaMask...', '#2196F3');
+
+        const web3 = new Web3(window.ethereum);
+        const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+        
+        // Correct ABI for setPatients function
+        const contractABI = [
+            {
+                "inputs": [
+                    {"internalType": "string", "name": "_fullname", "type": "string"},
+                    {"internalType": "uint256", "name": "_age", "type": "uint256"},
+                    {"internalType": "string", "name": "_gender", "type": "string"},
+                    {"internalType": "string", "name": "_medicalid", "type": "string"},
+                    {"internalType": "string", "name": "_bloodtype", "type": "string"},
+                    {"internalType": "string", "name": "_requiredOrgan", "type": "string"},
+                    {"internalType": "uint256", "name": "_weight", "type": "uint256"},
+                    {"internalType": "uint256", "name": "_height", "type": "uint256"},
+                    {"internalType": "string", "name": "_email", "type": "string"},
+                    {"internalType": "string", "name": "_phone", "type": "string"},
+                    {"internalType": "uint256", "name": "_urgencyLevel", "type": "uint256"}
+                ],
+                "name": "setPatients",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ];
+        
+        const contract = new web3.eth.Contract(contractABI, contractAddress);
+        console.log('✅ Contract instance created with correct ABI');
+
+        // Collect form data
+        const fullname = document.getElementById('PatientFullName')?.value.trim() || '';
+        const age = parseInt(document.getElementById('PatientAge')?.value) || 0;
+        const selectedGender = document.querySelector('input[name="gender"]:checked');
+        const gender = selectedGender ? selectedGender.value : '';
+        const medical_id = document.getElementById('PatientMedicalID')?.value.trim() || '';
+        const blood_type = document.getElementById('PatientBloodType')?.value || '';
+        const requiredOrgan = document.getElementById('PatientRequiredOrgan')?.value || '';
+        const weight = parseInt(document.getElementById('PatientWeight')?.value) || 0;
+        const height = parseInt(document.getElementById('PatientHeight')?.value) || 0;
+        const urgencyLevel = parseInt(document.getElementById('PatientUrgency')?.value) || 1;
+        
+        // Add email and phone (required by contract)
+        const email = "patient@example.com";  // Default or add form field
+        const phone = "1234567890";           // Default or add form field
+        
+        console.log('📋 Form data:', {fullname, age, gender, medical_id, blood_type, requiredOrgan, weight, height, urgencyLevel, email, phone});
+
+        // Basic validation
+        if (!fullname || age < 1 || age > 80 || !gender || !medical_id || !requiredOrgan) {
+            showAlert('⚠️ Please fill all required fields correctly', '#ff9800');
+            return;
+        }
+        
+        if (urgencyLevel < 1 || urgencyLevel > 5) {
+            showAlert('⚠️ Urgency level must be between 1-5', '#ff9800');
+            return;
+        }
+
+        // Register with ALL 11 parameters
+        console.log('📝 Registering patient with all required parameters...');
+        showAlert('📝 Registering on blockchain...', '#2196F3');
+        
+        const result = await contract.methods.setPatients(
+            fullname, age, gender, medical_id, blood_type, requiredOrgan, weight, height, email, phone, urgencyLevel
+        ).send({
+            from: accounts[0],
+            gas: 500000,  // Higher gas for patient registration
+            gasPrice: '1000000000'
+        });
+        
+        console.log('✅ Registration successful!', result);
+        showAlert('🎉 Patient registered successfully!', '#4CAF50');
+        
+        setTimeout(() => {
+            alert(`🎉 Patient Registration Successful!\n\nTransaction: ${result.transactionHash}\nMedical ID: ${medical_id}\nRequired Organ: ${requiredOrgan}\nUrgency Level: ${urgencyLevel}\nEmail: ${email}\nPhone: ${phone}\n\nCheck view-patients page!`);
+            
+            // Clear form
+            document.getElementById('PatientFullName').value = '';
+            document.getElementById('PatientAge').value = '';
+            document.getElementById('PatientMedicalID').value = '';
+            document.getElementById('PatientWeight').value = '';
+            document.getElementById('PatientHeight').value = '';
+            document.querySelectorAll('input[name="gender"]').forEach(radio => radio.checked = false);
+            document.getElementById('PatientBloodType').selectedIndex = 0;
+            document.getElementById('PatientRequiredOrgan').selectedIndex = 0;
+            document.getElementById('PatientUrgency').selectedIndex = 0;
+        }, 2000);
+        
+    } catch (error) {
+        console.error('❌ Registration failed:', error);
+        
+        let errorMessage = '❌ Registration failed: ';
+        if (error.message.includes('User denied')) {
+            errorMessage = '❌ Transaction was rejected by user';
+        } else if (error.message.includes('already exists')) {
+            errorMessage = '❌ Patient with this Medical ID already exists';
+        } else if (error.message.includes('Age must be')) {
+            errorMessage = '❌ Age must be between 1-80 years';
+        } else if (error.message.includes('Urgency level')) {
+            errorMessage = '❌ Urgency level must be between 1-5';
+        } else {
+            errorMessage += error.message;
+        }
+        
+        showAlert(errorMessage, '#f44336');
+    }
+}
+
+// Auto-attach Medical ID generator
+function attachMedicalIDGenerator() {
+    const patientName = document.getElementById("PatientFullName");
+    const patientID = document.getElementById("PatientMedicalID");
+
+    if (patientName && patientID) {
+        console.log('✅ Found Patient Name and ID fields');
+        patientName.addEventListener("input", function () {
+            if (patientName.value.trim() !== "" && patientName.value.length >= 3) {
+                const generated = generateMedicalID("Patient", patientName.value);
+                patientID.value = generated;
+                console.log('✅ Generated Patient ID:', generated);
+            }
+        });
+        
+        patientName.addEventListener("blur", function () {
+            if (patientName.value.trim() !== "") {
+                const generated = generateMedicalID("Patient", patientName.value);
+                patientID.value = generated;
+                console.log('✅ Generated Patient ID on blur:', generated);
+            }
+        });
+    } else {
+        console.log('⚠️ Patient fields not found');
+    }
+}
+
+// Initialize when DOM is ready
+document.addEventListener("DOMContentLoaded", function() {
+    console.log('🚀 Enhanced Patient Registration loaded');
+    
+    // Attach Medical ID generator
+    attachMedicalIDGenerator();
+    
+    // Attach register button handler
+    const registerBtn = document.getElementById('registerBtn');
+    if (registerBtn) {
+        registerBtn.addEventListener('click', registerPatient);
+        console.log('✅ Register button handler attached');
+    } else {
+        console.error('❌ Register button not found');
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="">
+    <meta name="description" content="Organ Donation Platform using Blockchain">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/style-home.css">
+    <link rel="stylesheet" href="../css/fontawesome-all.css">
+    <link rel="stylesheet" href="../main.js">
+    <link rel="icon" href="images/organ-donation-logo-new.svg">
+
+    <title>About Us – LifeLedger</title>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="row">
+                    
+                <nav>
+                    <a href="homepage.html"><img id="logo" src="./images/transparentlogo.png" alt="Organ Donation Platform"></a>
+                    <ul>
+                        <li><a href="homepage.html">Home</a></li>
+                        <li><a class="active" href="">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="awareness.html">Awareness</a></li>
+                        <!-- <li><a href="donor-pledge.html">Pledge</a></li> -->
+                          <!-- 🔥 ONLY THIS IS ADDED - Connect Wallet Button -->
+                        <li>
+                            <button id="connectWallet" class="btn btn-sm btn-success" style="margin-left: 10px;">
+                                <i class="fas fa-wallet"></i> Connect Wallet
+                            </button>
+                        </li>
+                        <!-- 🔥 END OF ADDITION -->
+                    </ul>
+                </nav>
+              
+            </div> <!-- end of row -->
+        </div> <!-- end of conatiner -->
+    </header>
+
+     <main>
+        <section class="about-section">
+            <div class="container">
+                <div class="row center-box">
+                    <div class="col-12">
+                        <div class="intro-text">
+                            <h1>About LifeLedger</h1>
+                            <p>
+                                <strong>LifeLedger</strong> is a next-generation organ donation platform built on the power of blockchain technology. Our mission is to revolutionize organ donation by making it more secure, transparent, and efficient. We aim to save lives by connecting donors and recipients through a decentralized, trust-driven network.
+                            </p>
+                            <p>
+                                Our platform ensures real-time data sharing, traceable organ transport, and legally verifiable smart contracts to prevent fraud and reduce transplant delays. We believe that innovation in technology can drive meaningful change in healthcare.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="team-section">
+            <div class="container">
+                <div class="row center-box">
+                    <div class="col-12">
+                        <h2 class="section-title">Meet Our Team</h2>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="content-box profile">
+                            <img src="../images/ritesh.jpeg" alt="">
+                            <h3>RITESH MENDHE</h3>
+                            <p>Blockchain Architect & Developer</p>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="content-box profile">
+                            <img src="../images/manav.jpeg" alt="VAIBHAV NAVGHARE" />
+                            <h3>MANAV CHATAP </h3>
+                            <p>Full Stack Developer & Engineer</p>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="content-box profile">
+                            <img src="../images/vaibhav.jpeg" alt="RITESH MENDHE" />
+                            <h3>VAIBHAV NAVGHARE</h3>
+                            <p>UI/UX Designer & Frontend Developer</p>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="content-box profile">
+                            <img src="../images/mayuresh.jpg" alt="MAYURESH GANGTHADE" />
+                            <h3>MAYURESH GANGTHADE</h3>
+                            <p>DevOps & Tools Specialist</p>
+                        </div> 
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="content-box profile">
+                            <img src="../images/ranjana.jpg" alt="RANJANA SINGH" />
+                            <h3>RANJANA SINGH</h3>
+                            <p>Research Analyst & Documentation Lead
+</p>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="row center-box">
+                <div class="col-4">
+                    <div class="footer-logo">
+                        <img src="../images/transparentlogo.png" alt="LifeLedger Logo" />
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div id="copyright">
+                        <p>© 2025 LifeLedger – All Rights Reserved</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- 🔥 ONLY THIS SCRIPT IS ADDED - Connect Wallet Functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if wallet was already connected
+            checkWalletConnection();
+            
+            document.getElementById('connectWallet').addEventListener('click', async () => {
+                if (typeof window.ethereum !== 'undefined') {
+                    try {
+                        const accounts = await window.ethereum.request({ 
+                            method: 'eth_requestAccounts' 
+                        });
+                        const account = accounts[0];
+                        
+                        // Update button to show connected address
+                        updateWalletButton(account);
+                        
+                        // Store connection in localStorage
+                        localStorage.setItem('walletConnected', account);
+                        
+                        console.log('✅ Wallet Connected:', account);
+                        alert('🎉 Wallet Connected Successfully!\n' + account);
+                    } catch (error) {
+                        console.error('❌ Connection failed:', error);
+                        alert('❌ Failed to connect wallet!');
+                    }
+                } else {
+                    alert('🦊 Please install MetaMask to connect wallet!');
+                    window.open('https://metamask.io/', '_blank');
+                }
+            });
+        });
+
+        // Function to update wallet button display
+        function updateWalletButton(account) {
+            const walletButton = document.getElementById('connectWallet');
+            walletButton.innerHTML = '<i class="fas fa-check"></i> ' + account.substring(0,6) + '...' + account.substring(38);
+            walletButton.classList.remove('btn-success');
+            walletButton.classList.add('btn-outline-success');
+        }
+
+        // Function to check if wallet is already connected
+        async function checkWalletConnection() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ 
+                        method: 'eth_accounts' 
+                    });
+                    if (accounts.length > 0) {
+                        updateWalletButton(accounts[0]);
+                    }
+                } catch (error) {
+                    console.log('Wallet not connected');
+                }
+            }
+        }
+    </script>
+    <!-- 🔥 END OF SCRIPT ADDITION -->
+</body>
+</html>

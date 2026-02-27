@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,700;1,900&display=swap" rel="stylesheet">
+
+    <link href="../css/styles.css" rel="stylesheet">
+    <link href="../css/bootstrap.css" rel="stylesheet">
+    <link href="../css/fontawesome-all.css" rel="stylesheet">
+
+    <link rel="icon" href="images/organ-donation-logo-new.svg">
+
+    <title>Transplant Matching System</title> 
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+
+    <style>
+        .match-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .match-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .perfect-match {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        }
+
+        .good-match {
+            border-color: #ffc107;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        }
+
+        .compatibility-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+            color: white;
+        }
+
+        .perfect { background-color: #28a745; }
+        .excellent { background-color: #20c997; }
+        .good { background-color: #ffc107; color: #212529; }
+        .fair { background-color: #fd7e14; }
+        .poor { background-color: #dc3545; }
+
+        .urgency-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .urgency-5 { background-color: #dc3545; }
+        .urgency-4 { background-color: #fd7e14; }
+        .urgency-3 { background-color: #ffc107; }
+        .urgency-2 { background-color: #20c997; }
+        .urgency-1 { background-color: #28a745; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .match-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .info-block {
+            background: rgba(255,255,255,0.7);
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+        }
+
+        .donor-info { border-left-color: #28a745; }
+        .patient-info { border-left-color: #dc3545; }
+
+        .match-button {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .match-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+        }
+
+        .no-matches {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+            font-size: 18px;
+        }
+
+        .loading-animation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Better font visibility and contrast */
+.match-card h5 {
+    color: #1a1a1a !important;
+    font-weight: bold !important;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.8) !important;
+}
+
+.match-card p {
+    color: #2c3e50 !important;
+    font-weight: 500 !important;
+}
+
+.info-block h6 {
+    font-weight: bold !important;
+    text-shadow: 0 1px 1px rgba(255,255,255,0.5) !important;
+}
+
+.info-block p {
+    color: #2c3e50 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+#statusMessage {
+    font-weight: bold !important;
+    font-size: 16px !important;
+    text-shadow: none !important;
+}
+
+.results-heading {
+    color: #1a1a1a !important;
+    font-weight: bold !important;
+    text-shadow: 0 1px 3px rgba(255,255,255,0.3) !important;
+}
+
+/* Improve heading visibility */
+h2 {
+    color: #1a1a1a !important;
+    font-weight: bold !important;
+    text-shadow: 0 2px 4px rgba(255,255,255,0.3) !important;
+}
+
+h4 {
+    color: #2c3e50 !important;
+    font-weight: bold !important;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.5) !important;
+}
+
+/* Better button hover effects */
+#findMatchesBtn:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4) !important;
+}
+
+#refreshDataBtn:hover {
+    background: #007bff !important;
+    color: white !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3) !important;
+}
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav>
+                        <a href="index.html">
+                            <img class="nav-logo" src="./images/transparentlogo.png" alt="Organ Donation Platform">
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="row center-box">
+                <div class="col-md-12">
+                    <h2 style="text-align: center; margin-bottom: 30px; color: #2c3e50;">
+                        Smart Transplant Matching System
+                    </h2>
+                    
+                    <div class="row">
+                        <div class="col-md-8 offset-md-2">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 30px; color: white;">
+    <h4>Organ-First Matching System</h4>
+    <p style="margin: 10px 0; opacity: 0.9;">
+        Our system prioritizes organ availability as the primary factor, followed by blood compatibility and urgency levels to find life-saving matches.
+    </p>
+</div>
+                        </div>
+                    </div>
+
+                   <div class="row" style="margin-bottom: 30px;">
+    <div class="col-md-12 text-center">
+        <div style="display: inline-flex; gap: 20px; align-items: center; justify-content: center;">
+            <button id="findMatchesBtn" class="btn btn-success btn-lg" style="
+                background: linear-gradient(135deg, #28a745, #20c997);
+                border: none;
+                border-radius: 25px;
+                padding: 15px 35px;
+                font-weight: bold;
+                color: white;
+                box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+                transition: all 0.3s ease;
+                min-width: 200px;
+                font-size: 16px;
+                ">
+                🔍 Find All Matches
+            </button>
+            
+            <button id="refreshDataBtn" class="btn btn-outline-primary btn-lg" style="
+                background: rgba(255, 255, 255, 0.9);
+                border: 2px solid #007bff;
+                border-radius: 25px;
+                padding: 15px 30px;
+                font-weight: bold;
+                color: #007bff;
+                transition: all 0.3s ease;
+                min-width: 180px;
+                font-size: 16px;
+                ">
+                🔄 Refresh Data
+            </button>
+        </div>
+    </div>
+</div>
+
+                    <div id="statusMessage" style="display: none; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
+                        <!-- Status messages will appear here -->
+                    </div>
+
+                    <div id="matchingResults" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4 style="color: #2c3e50; margin-bottom: 25px;">
+                                    🎯 Matching Results (<span id="matchCount">0</span> matches found)
+                                </h4>
+                                <div id="matchContainer">
+                                    <!-- Match cards will be generated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="loadingSpinner" class="loading-animation" style="display: none;">
+                        <div>
+                            <div class="spinner"></div>
+                            <p style="margin-top: 15px; color: #6c757d;">Analyzing compatibility...</p>
+                        </div>
+                    </div>
+
+                    <div id="noMatches" class="no-matches" style="display: none;">
+                        <h3>😔 No Compatible Matches Found</h3>
+                        <p>There are currently no compatible donor-patient matches available.</p>
+                        <p>Please ensure both donors and patients are registered in the system.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Contract configuration
+        const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93f642f64180aa3";
+        
+        // Complete ABI for matching functions
+        const CONTRACT_ABI = [
+            {
+                "inputs": [{"internalType": "string", "name": "_medicalid", "type": "string"}],
+                "name": "getDonor",
+                "outputs": [
+                    {
+                        "components": [
+                            {"internalType": "string", "name": "fullname", "type": "string"},
+                            {"internalType": "uint256", "name": "age", "type": "uint256"},
+                            {"internalType": "string", "name": "gender", "type": "string"},
+                            {"internalType": "string", "name": "medicalid", "type": "string"},
+                            {"internalType": "string", "name": "bloodtype", "type": "string"},
+                            {"internalType": "string[]", "name": "organs", "type": "string[]"},
+                            {"internalType": "uint256", "name": "weight", "type": "uint256"},
+                            {"internalType": "uint256", "name": "height", "type": "uint256"},
+                            {"internalType": "string", "name": "email", "type": "string"},
+                            {"internalType": "string", "name": "phone", "type": "string"},
+                            {"internalType": "bool", "name": "isActive", "type": "bool"},
+                            {"internalType": "uint256", "name": "registrationTime", "type": "uint256"}
+                        ],
+                        "internalType": "struct DonorContract.Donor",
+                        "name": "",
+                        "type": "tuple"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "string", "name": "_medicalid", "type": "string"}],
+                "name": "getPatient",
+                "outputs": [
+                    {
+                        "components": [
+                            {"internalType": "string", "name": "fullname", "type": "string"},
+                            {"internalType": "uint256", "name": "age", "type": "uint256"},
+                            {"internalType": "string", "name": "gender", "type": "string"},
+                            {"internalType": "string", "name": "medicalid", "type": "string"},
+                            {"internalType": "string", "name": "bloodtype", "type": "string"},
+                            {"internalType": "string", "name": "requiredOrgan", "type": "string"},
+                            {"internalType": "uint256", "name": "weight", "type": "uint256"},
+                            {"internalType": "uint256", "name": "height", "type": "uint256"},
+                            {"internalType": "string", "name": "email", "type": "string"},
+                            {"internalType": "string", "name": "phone", "type": "string"},
+                            {"internalType": "bool", "name": "isActive", "type": "bool"},
+                            {"internalType": "uint256", "name": "urgencyLevel", "type": "uint256"},
+                            {"internalType": "uint256", "name": "registrationTime", "type": "uint256"}
+                        ],
+                        "internalType": "struct DonorContract.Patient",
+                        "name": "",
+                        "type": "tuple"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getAllDonors",
+                "outputs": [{"internalType": "string[]", "name": "", "type": "string[]"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getAllPatients",
+                "outputs": [{"internalType": "string[]", "name": "", "type": "string[]"}],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        // Blood compatibility matrix
+        const BLOOD_COMPATIBILITY = {
+            'O-': ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'],
+            'O+': ['O+', 'A+', 'B+', 'AB+'],
+            'A-': ['A-', 'A+', 'AB-', 'AB+'],
+            'A+': ['A+', 'AB+'],
+            'B-': ['B-', 'B+', 'AB-', 'AB+'],
+            'B+': ['B+', 'AB+'],
+            'AB-': ['AB-', 'AB+'],
+            'AB+': ['AB+']
+        };
+
+        // Utility functions
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.style.display = 'block';
+            statusDiv.style.backgroundColor = type === 'success' ? '#d4edda' : 
+                                            type === 'warning' ? '#fff3cd' : 
+                                            type === 'error' ? '#f8d7da' : '#d1ecf1';
+            statusDiv.style.color = type === 'success' ? '#155724' : 
+                                   type === 'warning' ? '#856404' : 
+                                   type === 'error' ? '#721c24' : '#0c5460';
+            statusDiv.innerHTML = message;
+        }
+
+        function hideStatus() {
+            document.getElementById('statusMessage').style.display = 'none';
+        }
+
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'flex';
+            document.getElementById('matchingResults').style.display = 'none';
+            document.getElementById('noMatches').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+
+        // Blood compatibility checker
+        function isBloodCompatible(donorBlood, patientBlood) {
+            return BLOOD_COMPATIBILITY[donorBlood] && BLOOD_COMPATIBILITY[donorBlood].includes(patientBlood);
+        }
+
+        // Organ compatibility checker  
+        function hasRequiredOrgan(donorOrgans, requiredOrgan) {
+            if (!Array.isArray(donorOrgans)) return false;
+            return donorOrgans.some(organ => 
+                organ.toLowerCase().includes(requiredOrgan.toLowerCase()) ||
+                requiredOrgan.toLowerCase().includes(organ.toLowerCase())
+            );
+        }
+
+        // Calculate compatibility score - ORGAN MATCHING FIRST
+function calculateCompatibilityScore(donor, patient) {
+    let score = 0;
+    let factors = [];
+
+    // 🎯 PRIMARY: Organ availability (50 points) - MOST IMPORTANT
+    if (hasRequiredOrgan(donor.organs, patient.requiredOrgan)) {
+        score += 50;
+        factors.push(`✅ ${patient.requiredOrgan} available - PRIMARY MATCH`);
+    } else {
+        // If no organ match, this is not a viable match at all
+        factors.push(`❌ ${patient.requiredOrgan} not available - NO MATCH POSSIBLE`);
+        return { score: 0, factors }; // Return 0 score if no organ match
+    }
+
+    // 🩸 SECONDARY: Blood compatibility (25 points)
+    if (isBloodCompatible(donor.bloodtype, patient.bloodtype)) {
+        score += 20;
+        factors.push("✅ Blood compatible");
+        
+        // Perfect blood match bonus (5 extra points)
+        if (donor.bloodtype === patient.bloodtype) {
+            score += 5;
+            factors.push("🎯 Perfect blood match");
+        }
+    } else {
+        factors.push("❌ Blood incompatible - MAJOR RISK");
+        score -= 10; // Penalty for blood incompatibility
+    }
+
+    // 🚨 HIGH PRIORITY: Urgency level (15 points)
+    if (patient.urgencyLevel >= 5) {
+        score += 15;
+        factors.push("🚨 EMERGENCY - Critical urgency");
+    } else if (patient.urgencyLevel >= 4) {
+        score += 12;
+        factors.push("🚨 HIGH urgency priority");
+    } else if (patient.urgencyLevel >= 3) {
+        score += 8;
+        factors.push("⚠️ Moderate urgency");
+    } else {
+        score += 3;
+        factors.push("✅ Low urgency - stable");
+    }
+
+    // 📏 Age compatibility (5 points)
+    const ageDiff = Math.abs(donor.age - patient.age);
+    if (ageDiff <= 10) {
+        score += 5;
+        factors.push("✅ Similar age");
+    } else if (ageDiff <= 20) {
+        score += 3;
+        factors.push("⚠️ Moderate age difference");
+    } else if (ageDiff <= 30) {
+        score += 1;
+        factors.push("⚠️ Large age difference");
+    } else {
+        factors.push("❌ Very large age difference");
+    }
+
+    // ⚖️ Size compatibility (5 points)
+    const weightDiff = Math.abs(donor.weight - patient.weight);
+    if (weightDiff <= 10) {
+        score += 5;
+        factors.push("✅ Perfect size match");
+    } else if (weightDiff <= 20) {
+        score += 3;
+        factors.push("✅ Compatible size");
+    } else if (weightDiff <= 40) {
+        score += 1;
+        factors.push("⚠️ Size difference acceptable");
+    } else {
+        factors.push("⚠️ Large size difference");
+    }
+
+    return { score, factors };
+}
+
+
+       // Get compatibility level and badge - ORGAN-FOCUSED
+function getCompatibilityInfo(score) {
+    if (score >= 85) return { level: 'perfect', text: 'Perfect Organ Match', class: 'perfect' };
+    if (score >= 75) return { level: 'excellent', text: 'Excellent Match', class: 'excellent' };
+    if (score >= 65) return { level: 'good', text: 'Good Match', class: 'good' };
+    if (score >= 50) return { level: 'fair', text: 'Viable Match', class: 'fair' };
+    return { level: 'poor', text: 'High Risk Match', class: 'poor' };
+}
+
+
+        // Create match card HTML
+        function createMatchCard(donor, patient, compatibility) {
+            const compatInfo = getCompatibilityInfo(compatibility.score);
+            const matchClass = compatibility.score >= 70 ? 'perfect-match' : 
+                              compatibility.score >= 60 ? 'good-match' : '';
+
+            return `
+                <div class="match-card ${matchClass}" style="position: relative;">
+                    <div class="urgency-indicator urgency-${patient.urgencyLevel}"></div>
+                    
+                    <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 15px;">
+                        <h5 style="color: #2c3e50; margin: 0;">Match Found</h5>
+                        <span class="compatibility-badge ${compatInfo.class}">
+                            ${compatInfo.text} (${compatibility.score}%)
+                        </span>
+                    </div>
+
+                    <div class="match-info">
+                        <div class="info-block donor-info">
+                            <h6 style="color: #28a745; margin-bottom: 8px;">🩸 Donor Details</h6>
+                            <p style="margin: 2px 0;"><strong>Name:</strong> ${donor.fullname}</p>
+                            <p style="margin: 2px 0;"><strong>ID:</strong> ${donor.medicalid}</p>
+                            <p style="margin: 2px 0;"><strong>Blood:</strong> ${donor.bloodtype}</p>
+                            <p style="margin: 2px 0;"><strong>Age:</strong> ${donor.age} years</p>
+                            <p style="margin: 2px 0;"><strong>Available:</strong> ${Array.isArray(donor.organs) ? donor.organs.join(', ') : donor.organs}</p>
+                        </div>
+
+                        <div class="info-block patient-info">
+                            <h6 style="color: #dc3545; margin-bottom: 8px;">🏥 Patient Details</h6>
+                            <p style="margin: 2px 0;"><strong>Name:</strong> ${patient.fullname}</p>
+                            <p style="margin: 2px 0;"><strong>ID:</strong> ${patient.medicalid}</p>
+                            <p style="margin: 2px 0;"><strong>Blood:</strong> ${patient.bloodtype}</p>
+                            <p style="margin: 2px 0;"><strong>Age:</strong> ${patient.age} years</p>
+                            <p style="margin: 2px 0;"><strong>Needs:</strong> ${patient.requiredOrgan}</p>
+                            <p style="margin: 2px 0;"><strong>Urgency:</strong> Level ${patient.urgencyLevel}</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.8); border-radius: 8px;">
+                        <h6 style="color: #495057; margin-bottom: 8px;">🔬 Compatibility Analysis:</h6>
+                        <ul style="margin: 0; padding-left: 20px; font-size: 13px;">
+                            ${compatibility.factors.map(factor => `<li style="margin: 3px 0;">${factor}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <button class="match-button" onclick="confirmMatch('${donor.medicalid}', '${patient.medicalid}')">
+                        🤝 Confirm This Match
+                    </button>
+                </div>
+            `;
+        }
+
+        // Load and match data
+        async function findMatches() {
+            try {
+                showLoading();
+                hideStatus();
+                console.log('🔍 Starting transplant matching...');
+
+                // Check MetaMask
+                if (typeof window.ethereum === 'undefined') {
+                    throw new Error('MetaMask not found. Please install MetaMask.');
+                }
+
+                // Connect to MetaMask
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+
+                if (accounts.length === 0) {
+                    throw new Error('No accounts connected. Please connect MetaMask.');
+                }
+
+                console.log('✅ Connected account:', accounts[0]);
+
+                // Create web3 instance
+                const web3 = new Web3(window.ethereum);
+                const contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+
+                // Get all donor and patient IDs
+                const [donorIDs, patientIDs] = await Promise.all([
+                    contract.methods.getAllDonors().call(),
+                    contract.methods.getAllPatients().call()
+                ]);
+
+                console.log('📋 Found donors:', donorIDs.length);
+                console.log('📋 Found patients:', patientIDs.length);
+
+                if (donorIDs.length === 0 || patientIDs.length === 0) {
+                    throw new Error('Insufficient data: Need both donors and patients registered');
+                }
+
+                // Fetch all donor and patient data
+                const donors = [];
+                const patients = [];
+
+                for (let id of donorIDs) {
+                    try {
+                        const donorData = await contract.methods.getDonor(id).call();
+                        donors.push({
+                            fullname: donorData.fullname || donorData[0],
+                            age: parseInt(donorData.age || donorData[1]),
+                            gender: donorData.gender || donorData[2],
+                            medicalid: donorData.medicalid || donorData[3],
+                            bloodtype: donorData.bloodtype || donorData[4],
+                            organs: donorData.organs || donorData[5],
+                            weight: parseInt(donorData.weight || donorData[6]),
+                            height: parseInt(donorData.height || donorData[7])
+                        });
+                    } catch (error) {
+                        console.warn(`⚠️ Failed to fetch donor ${id}:`, error.message);
+                    }
+                }
+
+                for (let id of patientIDs) {
+                    try {
+                        const patientData = await contract.methods.getPatient(id).call();
+                        patients.push({
+                            fullname: patientData.fullname || patientData[0],
+                            age: parseInt(patientData.age || patientData[1]),
+                            gender: patientData.gender || patientData[2],
+                            medicalid: patientData.medicalid || patientData[3],
+                            bloodtype: patientData.bloodtype || patientData[4],
+                            requiredOrgan: patientData.requiredOrgan || patientData[5],
+                            weight: parseInt(patientData.weight || patientData[6]),
+                            height: parseInt(patientData.height || patientData[7]),
+                            urgencyLevel: parseInt(patientData.urgencyLevel || patientData[11])
+                        });
+                    } catch (error) {
+                        console.warn(`⚠️ Failed to fetch patient ${id}:`, error.message);
+                    }
+                }
+
+                console.log('✅ Loaded donors:', donors);
+                console.log('✅ Loaded patients:', patients);
+
+                // Find matches
+                const matches = [];
+                
+                for (let patient of patients) {
+                    for (let donor of donors) {
+                        const compatibility = calculateCompatibilityScore(donor, patient);
+                        
+                        // Only include matches with minimum compatibility
+                        if (compatibility.score >= 40) {
+                            matches.push({
+                                donor,
+                                patient,
+                                compatibility
+                            });
+                        }
+                    }
+                }
+
+                // Sort matches by score (highest first) and urgency
+                matches.sort((a, b) => {
+                    if (a.patient.urgencyLevel !== b.patient.urgencyLevel) {
+                        return b.patient.urgencyLevel - a.patient.urgencyLevel;
+                    }
+                    return b.compatibility.score - a.compatibility.score;
+                });
+
+                console.log('✅ Found matches:', matches);
+                displayMatches(matches);
+
+            } catch (error) {
+                console.error('❌ Matching failed:', error.message);
+                hideLoading();
+                showStatus(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Display matches
+        function displayMatches(matches) {
+            hideLoading();
+            
+            if (matches.length === 0) {
+                document.getElementById('noMatches').style.display = 'block';
+                document.getElementById('matchingResults').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('matchCount').textContent = matches.length;
+            document.getElementById('matchingResults').style.display = 'block';
+            document.getElementById('noMatches').style.display = 'none';
+
+            const container = document.getElementById('matchContainer');
+            container.innerHTML = matches.map(match => 
+                createMatchCard(match.donor, match.patient, match.compatibility)
+            ).join('');
+
+            showStatus(`✅ Found ${matches.length} compatible matches!`, 'success');
+        }
+
+        // Confirm match function
+        function confirmMatch(donorId, patientId) {
+            const confirmed = confirm(`🤝 Confirm this transplant match?\n\nDonor: ${donorId}\nPatient: ${patientId}\n\nThis will notify both parties and medical staff.`);
+            
+            if (confirmed) {
+                showStatus(`✅ Match confirmed! Notifications sent to donor ${donorId} and patient ${patientId}`, 'success');
+                console.log(`🤝 Match confirmed: ${donorId} → ${patientId}`);
+                // Here you could add blockchain transaction to record the match
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('findMatchesBtn').addEventListener('click', findMatches);
+            document.getElementById('refreshDataBtn').addEventListener('click', function() {
+                hideStatus();
+                document.getElementById('matchingResults').style.display = 'none';
+                document.getElementById('noMatches').style.display = 'none';
+                showStatus('🔄 Data refreshed. Click "Find All Matches" to search again.', 'info');
+            });
+        });
+
+        console.log('🚀 Transplant Matching System loaded and ready!');
+    </script>
+</body>
+</html>

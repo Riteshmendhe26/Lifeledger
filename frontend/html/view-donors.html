@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link href="../css/styles.css" rel="stylesheet">
+    <link href="../css/bootstrap.css" rel="stylesheet">
+    <link href="../css/fontawesome-all.css" rel="stylesheet">
+
+    <link rel="icon" href="images/organ-donation-logo-new.svg">
+
+    <title>Donors Database</title> 
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #d4f1dd 0%, #b8e6c9 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .database-card {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .header-text {
+            flex: 1;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+            text-align: left;
+        }
+
+        .page-subtitle {
+            font-size: 1.05rem;
+            color: #6b7280;
+            font-weight: 400;
+            margin: 0;
+            text-align: left;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px 28px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .refresh-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .refresh-btn:hover::before {
+            left: 100%;
+        }
+
+        .refresh-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .refresh-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .refresh-btn i {
+            font-size: 1.1rem;
+            transition: transform 0.6s ease;
+        }
+
+        .refresh-btn:hover i {
+            transform: rotate(180deg);
+        }
+
+        .status-message {
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .status-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        #donorTable {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        #donorTable thead {
+            background: linear-gradient(135deg, #0c7f93, #0a6375);
+        }
+
+        .nav-logo {
+            height: 150px;
+            width: auto;
+        }
+
+        #donorTable thead th {
+            padding: 20px 16px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border: none;
+            white-space: nowrap;
+        }
+
+        #donorTable tbody tr {
+            border-bottom: 1px solid #f3f4f6;
+            transition: all 0.2s ease;
+        }
+
+        #donorTable tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        #donorTable tbody td {
+            padding: 20px 16px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #374151;
+            font-weight: 500;
+            vertical-align: middle;
+        }
+
+        .id-badge {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: inline-block;
+            min-width: 40px;
+        }
+
+        .name-cell {
+            font-weight: 600;
+            color: #111827;
+            font-size: 0.95rem;
+        }
+
+        .age-cell {
+            color: #6b7280;
+        }
+
+        .medical-id-badge {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+
+        .blood-badge {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: inline-block;
+            min-width: 60px;
+        }
+
+        .organ-badge {
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin: 2px;
+        }
+
+        .weight-height-cell {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .email-cell {
+            color: #6b7280;
+            font-size: 0.85rem;
+        }
+
+        .phone-cell {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .loading-container {
+            text-align: center;
+            padding: 60px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1200px) {
+            .database-card {
+                padding: 30px;
+            }
+
+            #donorTable thead th,
+            #donorTable tbody td {
+                padding: 14px 10px;
+                font-size: 0.8rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .database-card {
+                padding: 20px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 20px;
+            }
+
+            .header-text {
+                text-align: center;
+            }
+
+            .page-title {
+                font-size: 1.75rem;
+                text-align: center;
+            }
+
+            .page-subtitle {
+                font-size: 0.95rem;
+                text-align: center;
+            }
+
+            #donorTable {
+                font-size: 0.75rem;
+            }
+
+            #donorTable thead th,
+            #donorTable tbody td {
+                padding: 10px 6px;
+            }
+
+            .refresh-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav>
+                        <a href="index.html">
+                            <img class="nav-logo" src="./images/transparentlogo.png" alt="LifeLedger">
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="database-card">
+            <div class="page-header">
+                <div class="header-content">
+                    <div class="header-text">
+                        <h1 class="page-title">Registered Donors Database</h1>
+                        <p class="page-subtitle">Blockchain-secured donor information with real-time synchronization</p>
+                    </div>
+                    <button id="refreshBtn" class="refresh-btn">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Refresh Data</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="loading-container" id="loadingSpinner" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p style="color: #6b7280;">Loading donor information...</p>
+            </div>
+
+            <div id="dataStatus" style="display: none;"></div>
+
+            <div class="table-wrapper" id="tableWrapper" style="display: none;">
+                <table id="donorTable">
+                    <!-- Table will be generated here -->
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+        
+        const CONTRACT_ABI = [
+            {
+                "inputs": [{"internalType": "string", "name": "_medicalid", "type": "string"}],
+                "name": "getDonor",
+                "outputs": [
+                    {
+                        "components": [
+                            {"internalType": "string", "name": "fullname", "type": "string"},
+                            {"internalType": "uint256", "name": "age", "type": "uint256"},
+                            {"internalType": "string", "name": "gender", "type": "string"},
+                            {"internalType": "string", "name": "medicalid", "type": "string"},
+                            {"internalType": "string", "name": "bloodtype", "type": "string"},
+                            {"internalType": "string[]", "name": "organs", "type": "string[]"},
+                            {"internalType": "uint256", "name": "weight", "type": "uint256"},
+                            {"internalType": "uint256", "name": "height", "type": "uint256"},
+                            {"internalType": "string", "name": "email", "type": "string"},
+                            {"internalType": "string", "name": "phone", "type": "string"},
+                            {"internalType": "bool", "name": "isActive", "type": "bool"},
+                            {"internalType": "uint256", "name": "registrationTime", "type": "uint256"}
+                        ],
+                        "internalType": "struct DonorContract.Donor",
+                        "name": "",
+                        "type": "tuple"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getAllDonors",
+                "outputs": [{"internalType": "string[]", "name": "", "type": "string[]"}],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('dataStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.className = `status-message status-${type}`;
+            statusDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i> ${message}`;
+        }
+
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('tableWrapper').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+
+        function createTable(donors, isReal = true) {
+            const table = document.getElementById('donorTable');
+            const wrapper = document.getElementById('tableWrapper');
+            
+            table.innerHTML = '';
+            
+            const headers = ['#', 'NAME', 'AGE', 'GENDER', 'MEDICAL ID', 'BLOOD TYPE', 'ORGANS', 'WEIGHT', 'HEIGHT', 'EMAIL', 'PHONE'];
+            
+            const thead = table.createTHead();
+            const headerRow = thead.insertRow();
+            
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            
+            const tbody = table.createTBody();
+            donors.forEach((donor, index) => {
+                const row = tbody.insertRow();
+                
+                // ID
+                const idCell = row.insertCell();
+                idCell.innerHTML = `<span class="id-badge">${index + 1}</span>`;
+                
+                // Name
+                const nameCell = row.insertCell();
+                nameCell.innerHTML = `<div class="name-cell">${donor.fullname}</div>`;
+                
+                // Age
+                const ageCell = row.insertCell();
+                ageCell.innerHTML = `<span class="age-cell">${donor.age} years</span>`;
+                
+                // Gender
+                const genderCell = row.insertCell();
+                genderCell.textContent = donor.gender;
+                
+                // Medical ID
+                const medicalIdCell = row.insertCell();
+                medicalIdCell.innerHTML = `<span class="medical-id-badge">${donor.medicalid}</span>`;
+                
+                // Blood Type
+                const bloodCell = row.insertCell();
+                bloodCell.innerHTML = `<span class="blood-badge">${donor.bloodtype}</span>`;
+                
+                // Organs
+                const organsCell = row.insertCell();
+                const organsList = Array.isArray(donor.organs) ? donor.organs : [donor.organs];
+                const organsHtml = organsList.map(organ => `<span class="organ-badge">${organ}</span>`).join(' ');
+                organsCell.innerHTML = organsHtml;
+                
+                // Weight
+                const weightCell = row.insertCell();
+                weightCell.innerHTML = `<span class="weight-height-cell">${donor.weight} kg</span>`;
+                
+                // Height
+                const heightCell = row.insertCell();
+                heightCell.innerHTML = `<span class="weight-height-cell">${donor.height} cm</span>`;
+                
+                // Email
+                const emailCell = row.insertCell();
+                emailCell.innerHTML = `<span class="email-cell">${donor.email}</span>`;
+                
+                // Phone
+                const phoneCell = row.insertCell();
+                phoneCell.innerHTML = `<span class="phone-cell">${donor.phone}</span>`;
+            });
+            
+            hideLoading();
+            wrapper.style.display = 'block';
+            
+            if (isReal) {
+                showStatus(`Successfully loaded ${donors.length} donors from blockchain`, 'success');
+            } else {
+                showStatus(`Showing ${donors.length} sample donors (no blockchain data found)`, 'warning');
+            }
+        }
+
+        async function loadDonorData() {
+            try {
+                showLoading();
+                document.getElementById('dataStatus').style.display = 'none';
+                
+                if (typeof window.ethereum === 'undefined') {
+                    throw new Error('MetaMask not found. Please install MetaMask.');
+                }
+                
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+                
+                if (accounts.length === 0) {
+                    throw new Error('No accounts connected. Please connect MetaMask.');
+                }
+                
+                const web3 = new Web3(window.ethereum);
+                const contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+                
+                const donorIDs = await contract.methods.getAllDonors().call();
+                
+                if (donorIDs.length === 0) {
+                    throw new Error('No donors registered yet');
+                }
+                
+                const donors = [];
+                for (let id of donorIDs) {
+                    try {
+                        const donorData = await contract.methods.getDonor(id).call();
+                        donors.push({
+                            fullname: donorData.fullname || donorData[0],
+                            age: parseInt(donorData.age || donorData[1]),
+                            gender: donorData.gender || donorData[2],
+                            medicalid: donorData.medicalid || donorData[3],
+                            bloodtype: donorData.bloodtype || donorData[4],
+                            organs: donorData.organs || donorData[5],
+                            weight: parseInt(donorData.weight || donorData[6]),
+                            height: parseInt(donorData.height || donorData[7]),
+                            email: donorData.email || donorData[8],
+                            phone: donorData.phone || donorData[9]
+                        });
+                    } catch (error) {
+                        console.warn(`Failed to load donor ${id}:`, error.message);
+                    }
+                }
+                
+                if (donors.length === 0) {
+                    throw new Error('Failed to load any donor data');
+                }
+                
+                createTable(donors, true);
+                return true;
+                
+            } catch (error) {
+                hideLoading();
+                showStatus(error.message, 'error');
+                return false;
+            }
+        }
+
+        function loadSampleData() {
+            const sampleDonors = [
+                {
+                    fullname: "Sample Donor 1",
+                    age: 30,
+                    gender: "Male",
+                    medicalid: "DON-SAM-001",
+                    bloodtype: "O+",
+                    organs: ["Heart", "Liver"],
+                    weight: 75,
+                    height: 175,
+                    email: "sample1@example.com",
+                    phone: "1234567890"
+                },
+                {
+                    fullname: "Sample Donor 2",
+                    age: 28,
+                    gender: "Female",
+                    medicalid: "DON-SAM-002",
+                    bloodtype: "A+",
+                    organs: ["Kidney"],
+                    weight: 65,
+                    height: 165,
+                    email: "sample2@example.com",
+                    phone: "0987654321"
+                }
+            ];
+            
+            setTimeout(() => {
+                createTable(sampleDonors, false);
+            }, 1000);
+        }
+
+        async function initializePage() {
+            const success = await loadDonorData();
+            if (!success) {
+                loadSampleData();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('refreshBtn').addEventListener('click', async function() {
+                const success = await loadDonorData();
+                if (!success) {
+                    loadSampleData();
+                }
+            });
+        });
+
+        window.addEventListener('load', initializePage);
+    </script>
+</body>
+</html>

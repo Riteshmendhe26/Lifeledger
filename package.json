@@ -1,0 +1,46 @@
+{
+  "name": "lifeledger-hardhat",
+  "version": "1.0.0",
+  "description": "Blockchain-based organ donation platform using Hardhat & Sepolia",
+  "main": "server.js",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "coverage": "npx hardhat coverage",
+    "deploy:localhost": "npx hardhat run scripts/deploy.js --network localhost",
+    "deploy:sepolia": "npx hardhat run scripts/deploy.js --network sepolia",
+    "verify:sepolia": "npx hardhat run scripts/verify.js --network sepolia",
+    "node": "npx hardhat node",
+    "clean": "npx hardhat clean",
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "npx hardhat compile && npm run build:frontend",
+    "build:frontend": "node scripts/build-frontend.js"
+  },
+  "keywords": [
+    "blockchain",
+    "organ-donation",
+    "ethereum",
+    "hardhat",
+    "web3"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.0",
+    "hardhat": "^2.19.0",
+    "hardhat-gas-reporter": "^1.0.9",
+    "solidity-coverage": "^0.8.5"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "nodemailer": "^7.0.9",
+    "web3": "^4.2.0"
+  }
+}
